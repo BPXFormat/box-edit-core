@@ -21,6 +21,7 @@
 // DEALINGS
 // IN THE SOFTWARE.
 
+use bpx::core::Handle;
 use crate::stream::Stream;
 use safer_ffi::prelude::*;
 
@@ -52,14 +53,16 @@ impl From<&bpx::core::header::SectionHeader> for SectionHeader {
 #[repr(C)]
 pub struct SectionInfo {
     pub header: SectionHeader,
-    pub index: u32
+    pub index: u32,
+    pub handle: u32
 }
 
-impl From<&bpx::core::SectionInfo> for SectionInfo {
-    fn from(value: &bpx::core::SectionInfo) -> Self {
+impl From<(Handle, &bpx::core::SectionInfo)> for SectionInfo {
+    fn from((handle, value): (Handle, &bpx::core::SectionInfo)) -> Self {
         Self {
             header: value.header().into(),
-            index: value.index()
+            index: value.index(),
+            handle: handle.into_raw()
         }
     }
 }
@@ -106,7 +109,10 @@ pub struct Container {
 
 impl From<bpx::core::Container<Stream>> for Container {
     fn from(value: bpx::core::Container<Stream>) -> Self {
-        let sections = value.sections().iter().map(|v| SectionInfo::from(&value.sections()[v])).collect();
+        let sections = value.sections()
+            .iter()
+            .map(|v| SectionInfo::from((v, &value.sections()[v])))
+            .collect();
         let main_header = MainHeader::from(value.main_header());
         Self {
             sections,
