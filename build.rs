@@ -21,16 +21,6 @@
 // DEALINGS
 // IN THE SOFTWARE.
 
-use bpx::core::Container;
-use crate::data_stream::DataStreamPtr;
-
-pub type ContainerPtr = Container<DataStreamPtr>;
-
-mod data_stream;
-mod container;
-mod util;
-mod error;
-mod section;
-mod stream;
-mod lua_binding;
-mod common;
+fn main() {
+    println!("cargo:rustc-cdylib-link-arg=-Wl,-install_name,libBPXEditCore.dylib")
+}

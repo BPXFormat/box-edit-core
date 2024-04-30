@@ -21,16 +21,19 @@
 // DEALINGS
 // IN THE SOFTWARE.
 
-use bpx::core::Container;
-use crate::data_stream::DataStreamPtr;
+macro_rules! export {
+    (
+        $(
+            fn $name: ident ($($pname: ident: $ptype: ty),*) $(-> $ret: ty)? $body: block
+        )*
+    ) => {
+        $(
+            concat_idents::concat_idents!(fn_name = bpx_, $name {
+                #[no_mangle]
+                pub unsafe extern "C" fn fn_name ($($pname: $ptype),*) $(-> $ret)? $body
+            });
+        )*
+    };
+}
 
-pub type ContainerPtr = Container<DataStreamPtr>;
-
-mod data_stream;
-mod container;
-mod util;
-mod error;
-mod section;
-mod stream;
-mod lua_binding;
-mod common;
+pub(crate) use export;
