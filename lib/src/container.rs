@@ -21,7 +21,7 @@
 // DEALINGS
 // IN THE SOFTWARE.
 
-use bpx::core::DEFAULT_MEMORY_THRESHOLD;
+use bpx::core::{DEFAULT_MEMORY_THRESHOLD, Handle};
 use bpx::core::header::Struct;
 use safer_ffi::prelude::*;
 use crate::common::{Container, MainHeader, SectionInfo};
@@ -100,49 +100,20 @@ pub fn bpx_container_get_sections(container: &Container) -> c_slice::Ref<'_, Sec
 
 #[ffi_export]
 pub fn bpx_container_save(container: &mut Container) -> bool {
-    unwrap_result(container.underlying.save()).is_some()
+    match unwrap_result(container.underlying.save()) {
+        Some(_) => {
+            container.main_header = MainHeader::from(container.underlying.main_header());
+            for v in &mut container.sections {
+                let handle = unsafe { Handle::from_raw(v.handle) };
+                *v = SectionInfo::from((handle, &container.underlying.sections()[handle]));
+            }
+            true
+        },
+        None => false
+    }
 }
 
 #[ffi_export]
 pub fn bpx_container_close(container: repr_c::Box<Container>) {
     drop(container);
 }
-
-/*export! {
-    fn container_create(data_stream: Id<ProtocolObject<dyn DataStream>>) -> *mut c_void {
-        let ptr = DataStreamPtr::from(data_stream);
-        let container = Container::create(ptr);
-        let bx = Box::new(container);
-        return Box::into_raw(bx) as _
-    }
-
-    fn container_open(data_stream: Id<ProtocolObject<dyn DataStream>>, flags: u8, out: *mut *mut c_void, error: *mut *mut NSError) -> BOOL {
-        let ptr = DataStreamPtr::from(data_stream);
-        let mut options = bpx::core::options::OpenOptions::new(ptr);
-        if flags & FLAG_IGNORE_CHECKSUM != 0 {
-            options = options.skip_checksum(true);
-        }
-        if flags & FLAG_IGNORE_SIGNATURE != 0 {
-            options = options.skip_signature(true);
-        }
-        let container = Container::open(options).map_err(|e| e.into_ns_error());
-        match container {
-            Ok(v) => {
-                let bx = Box::new(v);
-                *out = Box::into_raw(bx) as _;
-                return YES;
-            },
-            Err(e) => {
-                *error = Id::autorelease_return(e);
-                return NO;
-            }
-        }
-    }
-
-    fn container_close(container: *mut c_void) {
-        unsafe {
-            let bx: Box<ContainerPtr> = Box::from_raw(container as _);
-            drop(bx);
-        }
-    }
-}*/

@@ -27,15 +27,8 @@ use std::fs::File;
 use std::io::{Read, Seek, SeekFrom, Write};
 use std::os::unix::ffi::OsStrExt;
 use std::path::Path;
+use crate::common::CSeekFrom;
 use crate::error::unwrap_result;
-
-#[derive_ReprC]
-#[repr(i32)]
-pub enum CSeekFrom {
-    Start = 0,
-    Current,
-    End
-}
 
 #[derive_ReprC(dyn)]
 pub trait FfiStream {

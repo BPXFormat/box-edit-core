@@ -21,28 +21,24 @@
 // DEALINGS
 // IN THE SOFTWARE.
 
-use std::ffi::c_void;
 use std::io::{Read, Seek, SeekFrom, Write};
 use bpx::core::{AutoSectionData, Handle, SectionData};
-use bpx::core::header::{FLAG_CHECK_CRC32, FLAG_CHECK_WEAK, FLAG_COMPRESS_XZ, FLAG_COMPRESS_ZLIB, SectionHeader};
+use bpx::core::header::{FLAG_CHECK_CRC32, FLAG_CHECK_WEAK, FLAG_COMPRESS_XZ, FLAG_COMPRESS_ZLIB};
 use bpx::core::options::{Checksum, CompressionMethod};
 use bpx::traits::{Shift, ShiftTo};
-use icrate::Foundation::{NSArray, NSData, NSError, NSMutableArray};
-use objc2::{extern_class, mutability, ClassType, runtime::NSObject, msg_send_id, Encode, Encoding};
-use objc2::ffi::{BOOL, NO, YES};
-use objc2::rc::Id;
-use crate::ContainerPtr;
-use crate::error::{IntoNSError, NoneError};
-use crate::util::export;
+use safer_ffi::prelude::*;
+use crate::common::{Container, CSeekFrom, SectionInfo};
+use crate::error::{IntoBPXError, RustError, unwrap_result};
 
+#[derive_ReprC]
 #[repr(C)]
-pub struct BPXSectionOptions {
+pub struct SectionOptions {
     ty: u8,
     flags: u8,
     compression_threshold: u32,
 }
 
-impl BPXSectionOptions {
+impl SectionOptions {
     fn to_options(&self) -> bpx::core::options::SectionOptions {
         let mut opts = bpx::core::options::SectionOptions::new();
         opts.ty(self.ty);
@@ -65,127 +61,75 @@ impl BPXSectionOptions {
     }
 }
 
-#[repr(C)]
-pub struct BPXSectionHeader {
-    pointer: u64,
-    csize: u32,
-    size: u32,
-    checksum: u32,
-    ty: u8,
-    flags: u8
+#[ffi_export]
+pub fn bpx_section_create(container: &mut Container, options: &SectionOptions) -> u32 {
+    let handle = container.underlying.sections_mut().create(options.to_options());
+    container.sections.push(SectionInfo::from((handle, &container.underlying.sections()[handle])));
+    container.main_header.section_num += 1;
+    handle.into_raw()
 }
 
-impl BPXSectionHeader {
-    fn from_header(header: &SectionHeader) -> Self {
-        Self {
-            pointer: header.pointer,
-            csize: header.csize,
-            size: header.size,
-            checksum: header.chksum,
-            ty: header.ty,
-            flags: header.flags,
+#[ffi_export]
+pub fn bpx_section_remove(container: &mut Container, handle: u32) {
+    let handle = unsafe { Handle::from_raw(handle) };
+    container.underlying.sections_mut().remove(handle);
+    container.refresh();
+}
+
+fn try_with_section<E: IntoBPXError + Into<RustError>, T, F: FnOnce(&mut AutoSectionData) -> Result<T, E>>(container: &Container, handle: u32, closure: F) -> Option<T> {
+    let handle = unsafe { Handle::from_raw(handle) };
+    let mut v = unwrap_result(container.underlying.sections().load(handle))?;
+    unwrap_result(closure(&mut v))
+}
+
+fn with_section<T, F: FnOnce(&mut AutoSectionData) -> T>(container: &Container, handle: u32, closure: F) -> Option<T> {
+    let handle = unsafe { Handle::from_raw(handle) };
+    let mut v = unwrap_result(container.underlying.sections().load(handle))?;
+    Some(closure(&mut v))
+}
+
+#[ffi_export]
+pub fn bpx_section_size(container: &Container, handle: u32) -> isize {
+    with_section(container, handle, |v| {
+        v.size()
+    }).map(|v| { v as _ }).unwrap_or(-1)
+}
+
+#[ffi_export]
+pub fn bpx_section_seek(container: &Container, handle: u32, from: CSeekFrom, pos: isize) -> isize {
+    try_with_section(container, handle, |v| {
+        match from {
+            CSeekFrom::Start => v.seek(SeekFrom::Start(pos as _)),
+            CSeekFrom::Current => v.seek(SeekFrom::Current(pos as _)),
+            CSeekFrom::End => v.seek(SeekFrom::End(pos as _))
         }
-    }
+    }).map(|v| { v as _ }).unwrap_or(-1)
 }
 
-unsafe impl Encode for BPXSectionHeader {
-    const ENCODING: Encoding = Encoding::Struct("_BPXSectionHeader", &[u64::ENCODING, u32::ENCODING, u32::ENCODING, u32::ENCODING, u8::ENCODING, u8::ENCODING]);
+#[ffi_export]
+pub fn bpx_section_read(container: &Container, handle: u32, buffer: c_slice::Mut<'_, u8>) -> isize {
+    try_with_section(container, handle, |v| v.read(buffer.as_slice()))
+        .map(|v| v as _)
+        .unwrap_or(-1)
 }
 
-extern_class! {
-    #[repr(C)]
-    pub struct BPXSection;
-
-    unsafe impl ClassType for BPXSection {
-        type Super = NSObject;
-        type Mutability = mutability::InteriorMutable;
-    }
+#[ffi_export]
+pub fn bpx_section_write(container: &Container, handle: u32, buffer: c_slice::Ref<'_, u8>) -> isize {
+    try_with_section(container, handle, |v| v.write(buffer.as_slice()))
+        .map(|v| v as _)
+        .unwrap_or(-1)
 }
 
-trait FFIError {
-    fn error() -> Self;
+#[ffi_export]
+pub fn bpx_section_shift_right(container: &Container, handle: u32, length: usize) -> bool {
+    try_with_section(container, handle, |v| v.shift(ShiftTo::Right(length as _)))
+        .map(|_| true)
+        .unwrap_or(false)
 }
 
-impl FFIError for BOOL {
-    fn error() -> Self {
-        NO
-    }
-}
-
-impl<T> FFIError for *mut T {
-    fn error() -> Self {
-        std::ptr::null_mut()
-    }
-}
-
-unsafe fn with_section<E: IntoNSError, T: FFIError, F: FnOnce(&mut AutoSectionData) -> Result<T, E>>(container: *const c_void, handle: u32, error: *mut *mut NSError, closure: F) -> T {
-    let bpx = &*(container as *const ContainerPtr);
-    match bpx.sections().load(Handle::from_raw(handle)).map_err(|e| e.into_ns_error()) {
-        Ok(mut v) => {
-            match closure(&mut v).map_err(|e| e.into_ns_error()) {
-                Err(e) => {
-                    *error = Id::autorelease_return(e);
-                    T::error()
-                },
-                Ok(v) => {
-                    v
-                }
-            }
-        },
-        Err(e) => {
-            *error = Id::autorelease_return(e);
-            T::error()
-        }
-    }
-}
-
-export! {
-    fn section_create(container: *mut c_void, options: *const BPXSectionOptions) -> *mut BPXSection {
-        let bpx = &mut *(container as *mut ContainerPtr);
-        let opts = (*options).to_options();
-        let handle = bpx.sections_mut().create(opts);
-        let header = BPXSectionHeader::from_header(bpx.sections()[handle].header());
-        let index = bpx.sections()[handle].index();
-        let section: Id<BPXSection> = msg_send_id![BPXSection::alloc(), initWithContainer: container handle: handle.into_raw() header: header index: index];
-        Id::autorelease_return(section)
-    }
-
-    fn section_list(container: *const c_void) -> *mut NSArray {
-        let bpx = &*(container as *const ContainerPtr);
-        let mut array = NSMutableArray::new();
-        for handle in bpx.sections() {
-            let header = BPXSectionHeader::from_header(bpx.sections()[handle].header());
-            let index = bpx.sections()[handle].index();
-            let section: Id<BPXSection> = msg_send_id![BPXSection::alloc(), initWithContainer: container handle: handle.into_raw() header: header index: index];
-            array.addObject(&*section);
-        }
-        Id::autorelease_return(Id::cast(array))
-    }
-
-    fn section_size(container: *const c_void, handle: u32, error: *mut *mut NSError, size: *mut usize) -> BOOL {
-        with_section::<NoneError, _, _>(container, handle, error, |data| {
-            *size = data.size();
-            Ok(YES)
-        })
-    }
-
-    fn section_seek(container: *const c_void, handle: u32, error: *mut *mut NSError, pos: u64) -> BOOL {
-        with_section(container, handle, error, |data| data.seek(SeekFrom::Start(pos)).map(|_| YES))
-    }
-
-    fn section_read(container: *const c_void, handle: u32, error: *mut *mut NSError, length: usize) -> *mut NSData {
-        with_section::<std::io::Error, _, _>(container, handle, error, |data| {
-            let mut buffer = vec![0u8; length];
-            data.read(buffer.as_mut_slice())?;
-            Ok(Id::autorelease_return(NSData::from_vec(buffer)))
-        })
-    }
-
-    fn section_shift(container: *const c_void, handle: u32, error: *mut *mut NSError, length: usize) -> BOOL {
-        with_section(container, handle, error, |data| data.shift(ShiftTo::Right(length as _)).map(|_| YES))
-    }
-
-    fn section_write(container: *const c_void, handle: u32, error: *mut *mut NSError, nsdata: *const NSData) -> BOOL {
-        with_section(container, handle, error, |data| data.write((*nsdata).bytes()).map(|_| YES))
-    }
+#[ffi_export]
+pub fn bpx_section_shift_left(container: &Container, handle: u32, length: usize) -> bool {
+    try_with_section(container, handle, |v| v.shift(ShiftTo::Left(length as _)))
+        .map(|_| true)
+        .unwrap_or(false)
 }

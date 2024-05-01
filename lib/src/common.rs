@@ -26,6 +26,14 @@ use crate::stream::Stream;
 use safer_ffi::prelude::*;
 
 #[derive_ReprC]
+#[repr(i32)]
+pub enum CSeekFrom {
+    Start = 0,
+    Current,
+    End
+}
+
+#[derive_ReprC]
 #[repr(C)]
 pub struct SectionHeader {
     pub pointer: u64,
@@ -105,6 +113,18 @@ pub struct Container {
     pub underlying: bpx::core::Container<Stream>,
     pub sections: Vec<SectionInfo>,
     pub main_header: MainHeader
+}
+
+impl Container {
+    pub fn refresh(&mut self) {
+        let sections = self.underlying.sections()
+            .iter()
+            .map(|v| SectionInfo::from((v, &self.underlying.sections()[v])))
+            .collect();
+        let main_header = MainHeader::from(self.underlying.main_header());
+        self.sections = sections;
+        self.main_header = main_header;
+    }
 }
 
 impl From<bpx::core::Container<Stream>> for Container {

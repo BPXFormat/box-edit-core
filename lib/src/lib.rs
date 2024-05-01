@@ -21,12 +21,6 @@
 // DEALINGS
 // IN THE SOFTWARE.
 
-use bpx::core::Container;
-use crate::data_stream::DataStreamPtr;
-
-pub type ContainerPtr = Container<DataStreamPtr>;
-
-mod data_stream;
 mod container;
 mod util;
 mod error;
