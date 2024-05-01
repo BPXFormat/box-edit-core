@@ -11,5 +11,4 @@ crate-type = ["cdylib"]
 [dependencies]
 bpx = { version = "4.0.0-rc.11.0.1", features = ["sd"] }
 mlua = { version = "0.9.5", default-features = false, features = ["vendored", "luau"] }
-concat-idents = "1.1.5"
 safer-ffi = { version = "0.1.7", features = ["alloc", "dyn-traits"] }
