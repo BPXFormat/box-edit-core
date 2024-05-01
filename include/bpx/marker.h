@@ -21,6 +21,10 @@
 // DEALINGS
 // IN THE SOFTWARE.
 
-fn main() {
-    //println!("cargo:rustc-cdylib-link-arg=-Wl,-install_name,libBPXEditCore.dylib")
-}
+#ifndef BPX_MARKER_H
+#define BPX_MARKER_H
+
+#define BPX_NULLABLE 
+#define BPX_NONNULL 
+
+#endif

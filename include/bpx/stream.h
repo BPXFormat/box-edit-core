@@ -21,6 +21,30 @@
 // DEALINGS
 // IN THE SOFTWARE.
 
-fn main() {
-    //println!("cargo:rustc-cdylib-link-arg=-Wl,-install_name,libBPXEditCore.dylib")
-}
+#ifndef BPX_STREAM_H
+#define BPX_STREAM_H
+
+#include "bpx/common.h"
+
+typedef void* bpx_stream_t;
+
+typedef enum bpx_seek_from_e {
+    BPX_SEEK_FROM_START = 0,
+    BPX_SEEK_FROM_CURRENT,
+    BPX_SEEK_FROM_END
+} bpx_seek_from_t;
+
+typedef struct bpx_virtual_stream_s {
+    void *userdata;
+    ssize_t(*read)(void *userdata, bpx_bytes_t buffer);
+    ssize_t(*write)(void *userdata, bpx_bytes_const_t buffer);
+    bool(*flush)(void *userdata);
+    ssize_t(*seek)(void *userdata, bpx_seek_from_t from, ssize_t pos);
+} bpx_virtual_stream_t;
+
+BPX_NULLABLE bpx_stream_t bpx_stream_create(const char *path);
+BPX_NULLABLE bpx_stream_t bpx_stream_open(const char *path);
+
+BPX_NONNULL bpx_stream_t bpx_stream_new(BPX_NONNULL bpx_virtual_stream_t* virtual);
+
+#endif

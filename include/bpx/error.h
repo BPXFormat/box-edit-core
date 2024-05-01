@@ -21,6 +21,12 @@
 // DEALINGS
 // IN THE SOFTWARE.
 
-fn main() {
-    //println!("cargo:rustc-cdylib-link-arg=-Wl,-install_name,libBPXEditCore.dylib")
-}
+#ifndef BPX_ERROR_H
+#define BPX_ERROR_H
+
+#include "bpx/common.h"
+
+int32_t bpx_get_last_error_code();
+void bpx_get_last_error_message(bpx_bytes_t bytes);
+
+#endif
