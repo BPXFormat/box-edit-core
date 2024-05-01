@@ -22,7 +22,6 @@
 // IN THE SOFTWARE.
 
 mod container;
-mod util;
 mod error;
 mod section;
 mod stream;
