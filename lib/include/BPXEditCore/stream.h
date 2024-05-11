@@ -21,12 +21,24 @@
 // DEALINGS
 // IN THE SOFTWARE.
 
-#ifndef BPX_ERROR_H
-#define BPX_ERROR_H
+#ifndef BPX_STREAM_H
+#define BPX_STREAM_H
 
-#include "bpx/common.h"
+#include <BPXEditCore/common.h>
 
-int32_t bpx_get_last_error_code();
-void bpx_get_last_error_message(bpx_bytes_t bytes);
+typedef void* bpx_stream_t;
+
+typedef struct bpx_virtual_stream_s {
+    void *userdata;
+    ssize_t(*read)(void *userdata, bpx_bytes_t buffer);
+    ssize_t(*write)(void *userdata, bpx_bytes_const_t buffer);
+    bool(*flush)(void *userdata);
+    ssize_t(*seek)(void *userdata, bpx_seek_from_t from, ssize_t pos);
+} bpx_virtual_stream_t;
+
+BPX_NULLABLE bpx_stream_t bpx_stream_create(const char *path);
+BPX_NULLABLE bpx_stream_t bpx_stream_open(const char *path);
+
+BPX_NONNULL bpx_stream_t bpx_stream_new(BPX_NONNULL bpx_virtual_stream_t* virtual);
 
 #endif

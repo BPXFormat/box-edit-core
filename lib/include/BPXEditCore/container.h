@@ -24,8 +24,8 @@
 #ifndef BPX_CONTAINER_H
 #define BPX_CONTAINER_H
 
-#include "bpx/common.h"
-#include "bpx/stream.h"
+#include <BPXEditCore/common.h>
+#include <BPXEditCore/stream.h>
 
 #define FLAG_IGNORE_CHECKSUM 0x1
 #define FLAG_IGNORE_SIGNATURE 0x2

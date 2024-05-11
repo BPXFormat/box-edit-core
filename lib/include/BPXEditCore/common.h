@@ -29,9 +29,15 @@
 #include <sys/types.h>
 #include <stdint.h>
 
-#include "bpx/marker.h"
+#include <BPXEditCore/marker.h>
 
-typedef uint32_t bpx_section_handle_t;
+typedef BPX_NONNULL uint32_t bpx_section_handle_t;
+
+typedef enum bpx_seek_from_e {
+    BPX_SEEK_FROM_START = 0,
+    BPX_SEEK_FROM_CURRENT,
+    BPX_SEEK_FROM_END
+} bpx_seek_from_t;
 
 typedef struct bpx_section_header_s {
     uint64_t pointer;
