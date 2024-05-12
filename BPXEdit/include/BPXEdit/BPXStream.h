@@ -22,7 +22,6 @@
 // IN THE SOFTWARE.
 
 #import <Foundation/Foundation.h>
-#include <BPXEditCore/common.h>
 #include <BPXEdit/DataStream.h>
 
 NS_ASSUME_NONNULL_BEGIN

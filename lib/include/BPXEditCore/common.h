@@ -64,7 +64,7 @@ typedef struct bpx_main_header_s {
     uint8_t type_ext[16];
 } bpx_main_header_t;
 
-typedef void* bpx_container_t;
+typedef void bpx_container_t;
 
 typedef struct bpx_bytes_s {
     BPX_NONNULL uint8_t* bytes;

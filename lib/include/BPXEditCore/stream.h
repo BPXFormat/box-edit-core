@@ -26,19 +26,19 @@
 
 #include <BPXEditCore/common.h>
 
-typedef void* bpx_stream_t;
+typedef void bpx_stream_t;
 
 typedef struct bpx_virtual_stream_s {
-    void *userdata;
-    ssize_t(*read)(void *userdata, bpx_bytes_t buffer);
-    ssize_t(*write)(void *userdata, bpx_bytes_const_t buffer);
-    bool(*flush)(void *userdata);
-    ssize_t(*seek)(void *userdata, bpx_seek_from_t from, ssize_t pos);
+    void* userdata;
+    ssize_t(*read)(void* userdata, bpx_bytes_t buffer);
+    ssize_t(*write)(void* userdata, bpx_bytes_const_t buffer);
+    bool(*flush)(void* userdata);
+    ssize_t(*seek)(void* userdata, bpx_seek_from_t from, ssize_t pos);
 } bpx_virtual_stream_t;
 
-BPX_NULLABLE bpx_stream_t bpx_stream_create(const char *path);
-BPX_NULLABLE bpx_stream_t bpx_stream_open(const char *path);
+BPX_NULLABLE bpx_stream_t* bpx_stream_create(const char *path);
+BPX_NULLABLE bpx_stream_t* bpx_stream_open(const char *path);
 
-BPX_NONNULL bpx_stream_t bpx_stream_new(BPX_NONNULL bpx_virtual_stream_t* virtual);
+BPX_NONNULL bpx_stream_t* bpx_stream_new(BPX_NONNULL bpx_virtual_stream_t* virtual);
 
 #endif

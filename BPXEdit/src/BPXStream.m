@@ -26,7 +26,7 @@
 #include "BPXEditCore/stream.h"
 
 @implementation BPXStream {
-    bpx_stream_t _stream;
+    bpx_stream_t* _stream;
     bpx_virtual_stream_t _vtable;
     id<DataStream> _ds;
 }
