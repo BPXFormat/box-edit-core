@@ -23,6 +23,7 @@
 
 use std::cell::RefCell;
 use std::error::Error;
+use std::ffi::CStr;
 use std::fmt::{Display, Formatter};
 use safer_ffi::prelude::*;
 use std::io::Cursor;
@@ -30,27 +31,27 @@ use std::io::Write;
 
 pub trait IntoBPXError where Self: Sized + Error {
     const CODE: i32;
-    const DOMAIN: &'static str;
+    const DOMAIN: &'static CStr;
 }
 
 impl IntoBPXError for bpx::core::error::Error {
     const CODE: i32 = 1;
-    const DOMAIN: &'static str = "BPX";
+    const DOMAIN: &'static CStr = c"BPX";
 }
 
 impl IntoBPXError for bpx::sd::error::Error {
     const CODE: i32 = 2;
-    const DOMAIN: &'static str = "BPXSD";
+    const DOMAIN: &'static CStr = c"BPXSD";
 }
 
 impl IntoBPXError for bpx::sd::error::TypeError {
     const CODE: i32 = 3;
-    const DOMAIN: &'static str = "BPXSD TypeError";
+    const DOMAIN: &'static CStr = c"BPXSD TypeError";
 }
 
 impl IntoBPXError for std::io::Error {
     const CODE: i32 = 4;
-    const DOMAIN: &'static str = "IO";
+    const DOMAIN: &'static CStr = c"IO";
 }
 
 #[derive(Debug)]
@@ -83,6 +84,7 @@ bpx::impl_err_conversion! (
 
 pub struct BPXError {
     code: i32,
+    domain: &'static CStr,
     error: Option<RustError>
 }
 
@@ -90,6 +92,7 @@ impl BPXError {
     pub const fn none() -> BPXError {
         BPXError {
             code: -1,
+            domain: c"",
             error: None
         }
     }
@@ -102,6 +105,7 @@ thread_local! {
 pub fn set_last_error<E: IntoBPXError + Into<RustError>>(error: E) {
     LAST_ERROR.replace(BPXError {
         code: E::CODE as _,
+        domain: E::DOMAIN,
         error: Some(error.into())
     });
 }
@@ -119,6 +123,11 @@ pub fn unwrap_result<T, E: IntoBPXError + Into<RustError>>(result: Result<T, E>)
 #[ffi_export]
 pub fn bpx_get_last_error_code() -> i32 {
     LAST_ERROR.with_borrow(|e| e.code)
+}
+
+#[ffi_export]
+pub fn bpx_get_last_error_name() -> char_p::Ref<'static> {
+    LAST_ERROR.with_borrow(|e| e.domain.into())
 }
 
 #[ffi_export]
