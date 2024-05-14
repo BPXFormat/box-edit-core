@@ -22,21 +22,39 @@
 // IN THE SOFTWARE.
 
 #import <Foundation/Foundation.h>
-#include <BPXEdit/DataStream.h>
-#import <BPXEdit/BPXContainer.h>
+#include <BPXEditCore/container.h>
+
+typedef NS_OPTIONS(uint8_t, BPXContainerOptions) {
+    BPXContainerOptionsIgnoreChecksum = FLAG_IGNORE_CHECKSUM,
+    BPXContainerOptionsIgnoreSignature = FLAG_IGNORE_SIGNATURE,
+    BPXContainerOptionsIgnoreVersion = FLAG_IGNORE_VERSION,
+    BPXContainerOptionsRevertOnSaveFail = FLAG_REVERT_ON_SAVE_FAIL
+};
+
+typedef bpx_main_header_t BPXMainHeader;
+
+typedef struct BPXOpenOptions {
+    BPXContainerOptions options;
+    uint32_t memoryThreshold;
+} BPXOpenOptions;
+
+typedef struct BPXCreateOptions {
+    BPXContainerOptions options;
+    uint32_t memoryThreshold;
+    BPXMainHeader mainHeader;
+} BPXCreateOptions;
+
+@class BPXStream;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BPXStream : NSObject
+@interface BPXContainer : NSObject
 
--(instancetype)initFromDataStream:(id<DataStream>)stream;
--(__nullable instancetype)initFromFile:(NSString *)path create:(BOOL)create withError:(NSError **)error;
+@property (readonly) BPXMainHeader mainHeader;
 
--(BPXContainer * __nullable)openContainerWithOptions:(BPXOpenOptions)options error:(NSError **)error;
--(BPXContainer *)createContainerWithOptions:(BPXCreateOptions)options error:(NSError **)error;
+-(instancetype)initFromRaw:(BPXStream *)stream container:(bpx_container_t *)ptr;
 
--(BPXContainer * __nullable)openContainer:(NSError **)error;
--(BPXContainer *)createContainer:(NSError **)error;
+-(BOOL)save:(NSError **)error;
 
 @end
 

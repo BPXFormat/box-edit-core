@@ -21,23 +21,34 @@
 // DEALINGS
 // IN THE SOFTWARE.
 
-#import <Foundation/Foundation.h>
-#include <BPXEdit/DataStream.h>
-#import <BPXEdit/BPXContainer.h>
+#import "BPXEdit/BPXContainer.h"
+#import "BPXEdit/Util.h"
 
-NS_ASSUME_NONNULL_BEGIN
+@implementation BPXContainer {
+    BPXStream *_stream;
+    bpx_container_t *_container;
+}
 
-@interface BPXStream : NSObject
+-(instancetype)initFromRaw:(BPXStream *)stream container:(bpx_container_t *)ptr {
+    _container = ptr;
+    _stream = stream;
+    return self;
+}
 
--(instancetype)initFromDataStream:(id<DataStream>)stream;
--(__nullable instancetype)initFromFile:(NSString *)path create:(BOOL)create withError:(NSError **)error;
+-(void)dealloc {
+    if (_container != NULL) {
+        bpx_container_close(_container);
+        _container = NULL;
+    }
+    [super dealloc];
+}
 
--(BPXContainer * __nullable)openContainerWithOptions:(BPXOpenOptions)options error:(NSError **)error;
--(BPXContainer *)createContainerWithOptions:(BPXCreateOptions)options error:(NSError **)error;
-
--(BPXContainer * __nullable)openContainer:(NSError **)error;
--(BPXContainer *)createContainer:(NSError **)error;
+-(BOOL)save:(NSError **)error {
+    if (!bpx_container_save(_container)) {
+        *error = BPXEditGetLastError();
+        return NO;
+    }
+    return YES;
+}
 
 @end
-
-NS_ASSUME_NONNULL_END
