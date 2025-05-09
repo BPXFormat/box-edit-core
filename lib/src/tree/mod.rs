@@ -21,10 +21,6 @@
 // DEALINGS
 // IN THE SOFTWARE.
 
-mod container;
-mod error;
-mod section;
-mod stream;
-mod lua_binding;
-mod common;
-mod tree;
+mod model;
+mod util;
+mod interface;
