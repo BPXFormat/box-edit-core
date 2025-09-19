@@ -8,8 +8,10 @@ set(SRC
         include/BPXEdit/BPXStream.h
         include/BPXEdit/Util.h
         include/BPXEdit/BPXContainer.h
+        include/BPXEdit/BPXSection.h
         src/NSDataStream.m
         src/BPXStream.m
+        src/BPXSection.m
         src/Util.m
         src/BPXContainer.m
 )
@@ -28,4 +30,5 @@ set_target_properties(BPXEdit PROPERTIES
         # "compatibility version" in semantic format in Mach-O binary file
         SOVERSION 1.0.0
         PUBLIC_HEADER BPXEdit.h
+        XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER com.github.BPXEdit
 )
