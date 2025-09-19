@@ -5,7 +5,7 @@
 //  Created by Yuri Edward on 9/19/25.
 //
 
-#import "BPXSection.h"
+#import "BPXEdit/BPXSection.h"
 
 @implementation BPXSection
 
