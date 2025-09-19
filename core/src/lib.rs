@@ -21,18 +21,9 @@
 // DEALINGS
 // IN THE SOFTWARE.
 
-use std::path::Path;
-use mlua::{Lua, LuaOptions, StdLib};
-
-pub struct LuaEngine {
-    lua: Lua
-}
-
-impl LuaEngine {
-    pub fn new(script: &Path) {
-        let lua = Lua::new_with(StdLib::BIT | StdLib::COROUTINE | StdLib::MATH
-                                    | StdLib::STRING | StdLib::TABLE | StdLib::UTF8,
-                                LuaOptions::new().catch_rust_panics(false));
-        
-    }
-}
+mod container;
+mod error;
+mod section;
+mod stream;
+mod common;
+mod tree;

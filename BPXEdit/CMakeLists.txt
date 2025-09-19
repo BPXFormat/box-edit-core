@@ -16,7 +16,7 @@ set(SRC
 
 add_library(BPXEdit SHARED ${SRC})
 target_include_directories(BPXEdit PUBLIC include)
-target_link_libraries(BPXEdit PUBLIC ${CMAKE_SOURCE_DIR}/lib/target/BPXEditCore.xcframework)
+target_link_libraries(BPXEdit PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../core/target/BPXEditCore.xcframework)
 target_link_libraries(BPXEdit PUBLIC "-framework Foundation")
 set_target_properties(BPXEdit PROPERTIES
         FRAMEWORK TRUE
