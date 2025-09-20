@@ -27,4 +27,8 @@
 #define BPX_NULLABLE 
 #define BPX_NONNULL 
 
+#ifndef BPX_API
+#define BPX_API
+#endif
+
 #endif

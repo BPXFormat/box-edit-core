@@ -40,20 +40,20 @@ typedef struct bpx_section_options_s {
     uint32_t compression_threshold;
 } bpx_section_options_t;
 
-bpx_section_handle_t bpx_section_create(BPX_NONNULL bpx_container_t* container, BPX_NONNULL const bpx_section_options_t* options);
+BPX_API bpx_section_handle_t bpx_section_create(BPX_NONNULL bpx_container_t* container, BPX_NONNULL const bpx_section_options_t* options);
 
-void bpx_section_remove(BPX_NONNULL bpx_container_t* container, bpx_section_handle_t section);
+BPX_API void bpx_section_remove(BPX_NONNULL bpx_container_t* container, bpx_section_handle_t section);
 
-ssize_t bpx_section_size(BPX_NONNULL const bpx_container_t* container, bpx_section_handle_t section);
+BPX_API ssize_t bpx_section_size(BPX_NONNULL const bpx_container_t* container, bpx_section_handle_t section);
 
-ssize_t bpx_section_seek(BPX_NONNULL const bpx_container_t* container, bpx_section_handle_t section, bpx_seek_from_t from, ssize_t pos);
+BPX_API ssize_t bpx_section_seek(BPX_NONNULL const bpx_container_t* container, bpx_section_handle_t section, bpx_seek_from_t from, ssize_t pos);
 
-ssize_t bpx_section_read(BPX_NONNULL const bpx_container_t* container, bpx_section_handle_t section, bpx_bytes_t buffer);
+BPX_API ssize_t bpx_section_read(BPX_NONNULL const bpx_container_t* container, bpx_section_handle_t section, bpx_bytes_t buffer);
 
-ssize_t bpx_section_write(BPX_NONNULL const bpx_container_t* container, bpx_section_handle_t section, bpx_bytes_const_t buffer);
+BPX_API ssize_t bpx_section_write(BPX_NONNULL const bpx_container_t* container, bpx_section_handle_t section, bpx_bytes_const_t buffer);
 
-bool bpx_section_shift_left(BPX_NONNULL const bpx_container_t* container, bpx_section_handle_t section, size_t length);
+BPX_API bool bpx_section_shift_left(BPX_NONNULL const bpx_container_t* container, bpx_section_handle_t section, size_t length);
 
-bool bpx_section_shift_right(BPX_NONNULL const bpx_container_t* container, bpx_section_handle_t section, size_t length);
+BPX_API bool bpx_section_shift_right(BPX_NONNULL const bpx_container_t* container, bpx_section_handle_t section, size_t length);
 
 #endif

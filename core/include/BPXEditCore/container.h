@@ -43,17 +43,17 @@ typedef struct bpx_create_options_s {
     bpx_main_header_t main_header;
 } bpx_create_options_t;
 
-void bpx_create_options_default(BPX_NONNULL bpx_create_options_t* options);
-void bpx_open_options_default(BPX_NONNULL bpx_open_options_t* options);
+BPX_API void bpx_create_options_default(BPX_NONNULL bpx_create_options_t* options);
+BPX_API void bpx_open_options_default(BPX_NONNULL bpx_open_options_t* options);
 
-BPX_NONNULL bpx_container_t* bpx_container_create(BPX_NONNULL bpx_stream_t *stream, BPX_NONNULL const bpx_create_options_t* options);
-BPX_NULLABLE bpx_container_t* bpx_container_open(BPX_NONNULL bpx_stream_t *stream, BPX_NONNULL const bpx_open_options_t* options);
+BPX_NONNULL BPX_API bpx_container_t* bpx_container_create(BPX_NONNULL bpx_stream_t *stream, BPX_NONNULL const bpx_create_options_t* options);
+BPX_NULLABLE BPX_API bpx_container_t* bpx_container_open(BPX_NONNULL bpx_stream_t *stream, BPX_NONNULL const bpx_open_options_t* options);
 
-BPX_NONNULL const bpx_main_header_t* bpx_container_get_main_header(BPX_NONNULL const bpx_container_t* container);
-bpx_section_list_t bpx_container_get_sections(BPX_NONNULL const bpx_container_t* container);
+BPX_NONNULL BPX_API const bpx_main_header_t* bpx_container_get_main_header(BPX_NONNULL const bpx_container_t* container);
+BPX_API bpx_section_list_t bpx_container_get_sections(BPX_NONNULL const bpx_container_t* container);
 
-bool bpx_container_save(BPX_NONNULL bpx_container_t* container);
+BPX_API bool bpx_container_save(BPX_NONNULL bpx_container_t* container);
 
-void bpx_container_close(BPX_NONNULL bpx_container_t* container);
+BPX_API void bpx_container_close(BPX_NONNULL bpx_container_t* container);
 
 #endif

@@ -26,8 +26,8 @@
 
 #include <BPXEditCore/common.h>
 
-int32_t bpx_get_last_error_code();
-void bpx_get_last_error_message(bpx_bytes_t bytes);
-const char* bpx_get_last_error_name();
+BPX_API int32_t bpx_get_last_error_code();
+BPX_API void bpx_get_last_error_message(bpx_bytes_t bytes);
+BPX_API const char* bpx_get_last_error_name();
 
 #endif

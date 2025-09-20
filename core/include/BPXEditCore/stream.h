@@ -36,9 +36,9 @@ typedef struct bpx_virtual_stream_s {
     ssize_t(*seek)(void* userdata, bpx_seek_from_t from, ssize_t pos);
 } bpx_virtual_stream_t;
 
-BPX_NULLABLE bpx_stream_t* bpx_stream_create(const char *path);
-BPX_NULLABLE bpx_stream_t* bpx_stream_open(const char *path);
+BPX_NULLABLE BPX_API bpx_stream_t* bpx_stream_create(const char *path);
+BPX_NULLABLE BPX_API bpx_stream_t* bpx_stream_open(const char *path);
 
-BPX_NONNULL bpx_stream_t* bpx_stream_new(BPX_NONNULL bpx_virtual_stream_t* virtual);
+BPX_NONNULL BPX_API bpx_stream_t* bpx_stream_new(BPX_NONNULL bpx_virtual_stream_t* virtual);
 
 #endif
