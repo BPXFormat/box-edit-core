@@ -35,12 +35,12 @@ use crate::error::{IntoBPXError, RustError, unwrap_result};
 pub struct SectionOptions {
     ty: u8,
     flags: u8,
-    compression_threshold: u32,
+    compression_threshold: isize,
 }
 
 impl SectionOptions {
     fn to_options(&self) -> bpx::core::options::SectionOptions {
-        let mut opts = bpx::core::options::SectionOptions::new();
+        let mut opts = bpx::core::options::SectionOptions::default();
         opts.ty(self.ty);
         if self.flags & FLAG_CHECK_WEAK != 0 {
             opts.checksum(Checksum::Weak);
@@ -54,10 +54,19 @@ impl SectionOptions {
         if self.flags & FLAG_COMPRESS_XZ != 0 {
             opts.compression(CompressionMethod::Xz);
         }
-        if self.flags & FLAG_COMPRESS_ZLIB != 0 || self.flags & FLAG_COMPRESS_XZ != 0 {
-            opts.threshold(self.compression_threshold);
+        if self.compression_threshold >= 0 && (self.flags & FLAG_COMPRESS_ZLIB != 0 || self.flags & FLAG_COMPRESS_XZ != 0) {
+            opts.threshold(self.compression_threshold as u32);
         }
         opts
+    }
+}
+
+#[ffi_export]
+pub unsafe fn bpx_section_options_default(options: *mut SectionOptions) {
+    *options = SectionOptions {
+        ty: 0,
+        flags: FLAG_CHECK_WEAK | FLAG_COMPRESS_ZLIB,
+        compression_threshold: -1,
     }
 }
 

@@ -35,11 +35,13 @@
 typedef struct bpx_open_options_s {
     uint8_t flags;
     uint32_t memory_threshold;
+    uint32_t compression_threshold;
 } bpx_open_options_t;
 
 typedef struct bpx_create_options_s {
     uint8_t flags;
     uint32_t memory_threshold;
+    uint32_t compression_threshold;
     bpx_main_header_t main_header;
 } bpx_create_options_t;
 

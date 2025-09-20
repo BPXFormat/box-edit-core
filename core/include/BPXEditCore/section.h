@@ -37,8 +37,10 @@
 typedef struct bpx_section_options_s {
     uint8_t type;
     uint8_t flags;
-    uint32_t compression_threshold;
+    ssize_t compression_threshold;
 } bpx_section_options_t;
+
+BPX_API void bpx_section_options_default(BPX_NONNULL bpx_section_options_t* options);
 
 BPX_API bpx_section_handle_t bpx_section_create(BPX_NONNULL bpx_container_t* container, BPX_NONNULL const bpx_section_options_t* options);
 
