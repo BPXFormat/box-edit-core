@@ -23,10 +23,9 @@
 
 #import "BPXEdit/BPXStream.h"
 #import "BPXEdit/Util.h"
-#include "BPXEditCore/stream.h"
 
 @implementation BPXStream {
-    bpx_stream_t* _stream;
+    bpx_stream_t* _handle;
     bpx_virtual_stream_t _vtable;
     id<DataStream> _ds;
 }
@@ -51,6 +50,10 @@ static bool internal__bpx_stream_wrapper_flush(void *userdata) {
     return [ds flush] == YES;
 }
 
+-(bpx_stream_t*)rawHandle {
+    return _handle;
+}
+
 -(instancetype)initFromDataStream:(id<DataStream>)stream {
     _ds = stream;
     _vtable.userdata = _ds;
@@ -58,7 +61,7 @@ static bool internal__bpx_stream_wrapper_flush(void *userdata) {
     _vtable.write = &internal__bpx_stream_wrapper_write;
     _vtable.seek = &internal__bpx_stream_wrapper_seek;
     _vtable.flush = &internal__bpx_stream_wrapper_flush;
-    _stream = bpx_stream_new(&_vtable);
+    _handle = bpx_stream_new(&_vtable);
     return self;
 }
 
@@ -66,11 +69,11 @@ static bool internal__bpx_stream_wrapper_flush(void *userdata) {
     _ds = nil;
     const char *p = [path UTF8String];
     if (create) {
-        _stream = bpx_stream_create(p);
+        _handle = bpx_stream_create(p);
     } else {
-        _stream = bpx_stream_open(p);
+        _handle = bpx_stream_open(p);
     }
-    if (_stream == NULL) {
+    if (_handle == NULL) {
         *error = BPXEditGetLastError();
         return nil;
     }
@@ -80,59 +83,6 @@ static bool internal__bpx_stream_wrapper_flush(void *userdata) {
 -(void)dealloc {
     //TODO: Implement stream destruction
     [super dealloc];
-}
-
--(BPXContainer * __nullable)openContainerWithOptions:(BPXOpenOptions)options error:(NSError **)error {
-    if (_stream == NULL)
-        [NSException raise:NSObjectNotAvailableException format:@"Attempt to open a container from a dangling stream!"];
-    bpx_open_options_t opts = {
-            .memory_threshold = options.memoryThreshold,
-            .flags = options.options
-    };
-    bpx_container_t *container = bpx_container_open(_stream, &opts);
-    _stream = NULL;
-    if (container == NULL) {
-        *error = BPXEditGetLastError();
-        return nil;
-    }
-    return [[BPXContainer alloc] initFromRaw:self container:container];
-}
-
--(BPXContainer *)createContainerWithOptions:(BPXCreateOptions)options error:(NSError **)error {
-    if (_stream == NULL)
-        [NSException raise:NSObjectNotAvailableException format:@"Attempt to create a container from a dangling stream!"];
-    bpx_create_options_t opts = {
-            .flags = options.options,
-            .memory_threshold = options.memoryThreshold,
-            .main_header = options.mainHeader
-    };
-    bpx_container_t *container = bpx_container_create(_stream, &opts);
-    _stream = NULL;
-    return [[BPXContainer alloc] initFromRaw:self container:container];
-}
-
--(BPXContainer * __nullable)openContainer:(NSError **)error {
-    if (_stream == NULL)
-        [NSException raise:NSObjectNotAvailableException format:@"Attempt to open a container from a dangling stream!"];
-    bpx_open_options_t opts;
-    bpx_open_options_default(&opts);
-    bpx_container_t *container = bpx_container_open(_stream, &opts);
-    _stream = NULL;
-    if (container == NULL) {
-        *error = BPXEditGetLastError();
-        return nil;
-    }
-    return [[BPXContainer alloc] initFromRaw:self container:container];
-}
-
--(BPXContainer *)createContainer:(NSError **)error {
-    if (_stream == NULL)
-        [NSException raise:NSObjectNotAvailableException format:@"Attempt to create a container from a dangling stream!"];
-    bpx_create_options_t opts;
-    bpx_create_options_default(&opts);
-    bpx_container_t *container = bpx_container_create(_stream, &opts);
-    _stream = NULL;
-    return [[BPXContainer alloc] initFromRaw:self container:container];
 }
 
 @end

@@ -35,26 +35,45 @@ typedef bpx_main_header_t BPXMainHeader;
 
 typedef struct BPXOpenOptions {
     BPXContainerOptions options;
+    uint32_t compressionThreshold;
     uint32_t memoryThreshold;
 } BPXOpenOptions;
 
 typedef struct BPXCreateOptions {
     BPXContainerOptions options;
+    uint32_t compressionThreshold;
     uint32_t memoryThreshold;
     BPXMainHeader mainHeader;
 } BPXCreateOptions;
 
 @class BPXStream;
+@class BPXSection;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BPXContainer : NSObject
 
-@property (readonly) BPXMainHeader mainHeader;
+//TODO: Support mutating main header
 
--(instancetype)initFromRaw:(BPXStream *)stream container:(bpx_container_t *)ptr;
+@property(readonly) BPXMainHeader mainHeader;
+@property(readonly) bpx_container_t* rawHandle;
+@property(readonly) NSArray<BPXSection*>* sections;
+
+-(instancetype)initFromStream:(BPXStream *)stream handle:(bpx_container_t*)handle;
 
 -(BOOL)save:(NSError **)error;
+
+-addSection:(BPXSection*)section;
+
+-removeSection:(BPXSection*)section;
+
++(nullable instancetype)open:(BPXStream*)stream options:(BPXOpenOptions)options error:(NSError**)error;
+
++(nullable instancetype)open:(BPXStream*)stream error:(NSError**)error;
+
++(instancetype)create:(BPXStream*)stream options:(BPXCreateOptions)options;
+
++(instancetype)create:(BPXStream*)stream;
 
 @end
 

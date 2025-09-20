@@ -22,21 +22,18 @@
 // IN THE SOFTWARE.
 
 #import <Foundation/Foundation.h>
-#include <BPXEdit/DataStream.h>
+#import <BPXEdit/DataStream.h>
+#include "BPXEditCore/stream.h"
 #import <BPXEdit/BPXContainer.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface BPXStream : NSObject
 
+@property(readonly) bpx_stream_t* rawHandle;
+
 -(instancetype)initFromDataStream:(id<DataStream>)stream;
--(__nullable instancetype)initFromFile:(NSString *)path create:(BOOL)create withError:(NSError **)error;
-
--(BPXContainer * __nullable)openContainerWithOptions:(BPXOpenOptions)options error:(NSError **)error;
--(BPXContainer *)createContainerWithOptions:(BPXCreateOptions)options error:(NSError **)error;
-
--(BPXContainer * __nullable)openContainer:(NSError **)error;
--(BPXContainer *)createContainer:(NSError **)error;
+-(nullable instancetype)initFromFile:(NSString *)path create:(BOOL)create withError:(NSError **)error;
 
 @end
 
