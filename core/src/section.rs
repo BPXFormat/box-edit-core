@@ -25,7 +25,7 @@ use std::io::{Read, Seek, SeekFrom, Write};
 use bpx::core::{AutoSectionData, Handle, SectionData};
 use bpx::core::header::{FLAG_CHECK_CRC32, FLAG_CHECK_WEAK, FLAG_COMPRESS_XZ, FLAG_COMPRESS_ZLIB};
 use bpx::core::options::{Checksum, CompressionMethod};
-use bpx::traits::{Shift, ShiftTo};
+use bpx::util::traits::{Shift, ShiftTo};
 use safer_ffi::prelude::*;
 use crate::common::{Container, CSeekFrom, SectionInfo};
 use crate::error::{IntoBPXError, RustError, unwrap_result};

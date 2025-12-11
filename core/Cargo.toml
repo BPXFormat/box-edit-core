@@ -9,8 +9,8 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-bpx = { version = "4.0.0-rc.12.0.0", features = ["sd"] }
-safer-ffi = { version = "0.1.7", features = ["alloc", "dyn-traits"] }
+bpx = { version = "4.0.0-rc.13.0.0", features = ["sd"] }
+safer-ffi = { version = "0.2.0-alpha.0", features = ["alloc", "dyn-traits"] }
 bp3d-sdk-util = { git = "https://github.com/BlockProject3D/sdk.build-tools.git" }
 
 [bp3d-package]

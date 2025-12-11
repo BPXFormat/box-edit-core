@@ -21,7 +21,6 @@
 // DEALINGS
 // IN THE SOFTWARE.
 
-use std::ffi::CString;
 use safer_ffi::prelude::*;
 
 #[derive_ReprC]
