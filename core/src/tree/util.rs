@@ -62,7 +62,26 @@ impl TryFrom<&bpx::sd::Array> for Node {
     type Error = Error;
 
     fn try_from(value: &bpx::sd::Array) -> Result<Self, Self::Error> {
-        todo!()
+        let mut node = Node {
+            name: CString::from(c"").into(),
+            value: Value::Null,
+            details: None,
+            children: Vec::new()
+        };
+        for v in value {
+            let n = match v {
+                bpx::sd::Value::Array(v) => Node::try_from(v)?,
+                bpx::sd::Value::Object(v) => Node::try_from(v)?,
+                v => Node {
+                    name: CString::from(c"").into(),
+                    value: v.try_into()?,
+                    details: None,
+                    children: Vec::new()
+                }
+            };
+            node.children.push(n);
+        }
+        Ok(node)
     }
 }
 
@@ -79,7 +98,13 @@ impl TryFrom<&bpx::sd::Object> for Node {
         let debugger = bpx::sd::debug::Debugger::attach(value).map_err(Error::TypeError)?;
         for (name, hash, value) in &debugger {
             let child = match value {
-                bpx::sd::Value::Array(_) => todo!(),
+                bpx::sd::Value::Array(v) => {
+                    let mut node: Node = v.try_into()?;
+                    node.name = name.map(String::from)
+                        .unwrap_or_else(|| format!("{:X}", hash.into_inner())).try_into()
+                        .map_err(|_| Error::InvalidString)?;
+                    node
+                },
                 bpx::sd::Value::Object(v) => {
                     let mut node: Node = v.try_into()?;
                     node.name = name.map(String::from)
@@ -88,7 +113,7 @@ impl TryFrom<&bpx::sd::Object> for Node {
                     node
                 },
                 v => Node {
-                    value: v.try_into().unwrap(),
+                    value: v.try_into()?,
                     name: name.map(String::from)
                         .unwrap_or_else(|| format!("{:X}", hash.into_inner())).try_into()
                         .map_err(|_| Error::InvalidString)?,
