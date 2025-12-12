@@ -64,24 +64,37 @@ typedef struct bpx_main_header_s {
     uint8_t type_ext[16];
 } bpx_main_header_t;
 
+typedef enum bpx_value_type_e {
+    BPX_VALUE_TYPE_NULL = 0,
+    BPX_VALUE_TYPE_INT8,
+    BPX_VALUE_TYPE_UINT8,
+    BPX_VALUE_TYPE_INT16,
+    BPX_VALUE_TYPE_UINT16,
+    BPX_VALUE_TYPE_INT32,
+    BPX_VALUE_TYPE_UINT32,
+    BPX_VALUE_TYPE_INT64,
+    BPX_VALUE_TYPE_UINT64,
+    BPX_VALUE_TYPE_FLOAT,
+    BPX_VALUE_TYPE_DOUBLE,
+    BPX_VALUE_TYPE_BOOLEAN,
+    BPX_VALUE_TYPE_STRING
+} bpx_value_type_t;
+
 typedef void bpx_container_t;
 
-typedef struct bpx_bytes_s {
-    BPX_NONNULL uint8_t* bytes;
-    size_t len;
-} bpx_bytes_t;
+#define BPX_SLICE(name, type, value) typedef struct bpx_##name##_s { \
+    BPX_NONNULL type* value;                                         \
+    size_t len;                                                      \
+} bpx_##name##_t;
 
-typedef struct bpx_bytes_const_s {
-    BPX_NONNULL const uint8_t* bytes;
-    size_t len;
-} bpx_bytes_const_t;
-
-typedef struct bpx_section_list_s {
-    BPX_NONNULL const bpx_section_info_t* sections;
-    size_t count;
-} bpx_section_list_t;
+BPX_SLICE(bytes, uint8_t, bytes);
+BPX_SLICE(bytes_const, const uint8_t, bytes);
+BPX_SLICE(section_list, const bpx_section_info_t, sections);
 
 #define BPX_BYTES(ptr, len) (bpx_bytes_t){ ptr, len }
 #define BPX_BYTES_CONST(ptr, len) (bpx_bytes_const_t){ ptr, len }
+
+typedef float float32_t;
+typedef double float64_t;
 
 #endif
