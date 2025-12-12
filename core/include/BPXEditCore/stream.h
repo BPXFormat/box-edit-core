@@ -39,6 +39,6 @@ typedef struct bpx_virtual_stream_s {
 BPX_NULLABLE BPX_API bpx_stream_t* bpx_stream_create(const char *path);
 BPX_NULLABLE BPX_API bpx_stream_t* bpx_stream_open(const char *path);
 
-BPX_NONNULL BPX_API bpx_stream_t* bpx_stream_new(BPX_NONNULL bpx_virtual_stream_t* virtual);
+BPX_NONNULL BPX_API bpx_stream_t* bpx_stream_new(BPX_NONNULL bpx_virtual_stream_t* vtable);
 
 #endif
