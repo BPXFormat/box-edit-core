@@ -26,9 +26,10 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-use bpx::core::Handle;
+use bpx::core::{AutoSectionData, Handle};
 use crate::stream::Stream;
 use safer_ffi::prelude::*;
+use crate::error::{unwrap_result, IntoBPXError, RustError};
 
 #[derive_ReprC]
 #[repr(i32)]
@@ -145,4 +146,16 @@ impl From<bpx::core::Container<Stream>> for Container {
             underlying: value
         }
     }
+}
+
+pub fn try_with_section<E: IntoBPXError + Into<RustError>, T, F: FnOnce(&mut AutoSectionData) -> Result<T, E>>(container: &Container, handle: u32, closure: F) -> Option<T> {
+    let handle = unsafe { Handle::from_raw(handle) };
+    let mut v = unwrap_result(container.underlying.sections().load(handle))?;
+    unwrap_result(closure(&mut v))
+}
+
+pub fn with_section<T, F: FnOnce(&mut AutoSectionData) -> T>(container: &Container, handle: u32, closure: F) -> Option<T> {
+    let handle = unsafe { Handle::from_raw(handle) };
+    let mut v = unwrap_result(container.underlying.sections().load(handle))?;
+    Some(closure(&mut v))
 }

@@ -26,3 +26,21 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+use safer_ffi::prelude::*;
+use crate::common::{try_with_section, Container};
+use crate::error::unwrap_result;
+use crate::tree::model::Node;
+
+#[ffi_export]
+pub fn bpxsd_read_from_bytes(buffer: c_slice::Ref<'_, u8>) -> Option<repr_c::Box<Node>> {
+    let value = unwrap_result(bpx::sd::Value::read(buffer.as_slice(), 4))?;
+    unwrap_result(Node::try_from(value.as_object()?).map(|v| Box::new(v).into()))
+}
+
+#[ffi_export]
+pub fn bpxsd_read_from_section(container: &Container, handle: u32) -> Option<repr_c::Box<Node>> {
+    let value = try_with_section(container, handle, |v| {
+        bpx::sd::Value::read(v, 4)
+    })?;
+    unwrap_result(Node::try_from(value.as_object()?).map(|v| Box::new(v).into()))
+}

@@ -32,7 +32,7 @@ use bpx::core::header::{FLAG_CHECK_CRC32, FLAG_CHECK_WEAK, FLAG_COMPRESS_XZ, FLA
 use bpx::core::options::{Checksum, CompressionMethod};
 use bpx::util::traits::{Shift, ShiftTo};
 use safer_ffi::prelude::*;
-use crate::common::{Container, CSeekFrom, SectionInfo};
+use crate::common::{Container, CSeekFrom, SectionInfo, with_section, try_with_section};
 use crate::error::{IntoBPXError, RustError, unwrap_result};
 
 #[derive_ReprC]
@@ -88,18 +88,6 @@ pub fn bpx_section_remove(container: &mut Container, handle: u32) {
     let handle = unsafe { Handle::from_raw(handle) };
     container.underlying.sections_mut().remove(handle);
     container.refresh();
-}
-
-fn try_with_section<E: IntoBPXError + Into<RustError>, T, F: FnOnce(&mut AutoSectionData) -> Result<T, E>>(container: &Container, handle: u32, closure: F) -> Option<T> {
-    let handle = unsafe { Handle::from_raw(handle) };
-    let mut v = unwrap_result(container.underlying.sections().load(handle))?;
-    unwrap_result(closure(&mut v))
-}
-
-fn with_section<T, F: FnOnce(&mut AutoSectionData) -> T>(container: &Container, handle: u32, closure: F) -> Option<T> {
-    let handle = unsafe { Handle::from_raw(handle) };
-    let mut v = unwrap_result(container.underlying.sections().load(handle))?;
-    Some(closure(&mut v))
 }
 
 #[ffi_export]

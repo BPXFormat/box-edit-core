@@ -30,6 +30,11 @@ use crate::tree::model::{Node, Value, ValueType};
 use safer_ffi::prelude::*;
 
 #[ffi_export]
+pub fn bpx_node_free(node: repr_c::Box<Node>) {
+    drop(node);
+}
+
+#[ffi_export]
 pub fn bpx_node_get_name(node: &Node) -> char_p::Ref<'_> {
     node.name.as_ref()
 }

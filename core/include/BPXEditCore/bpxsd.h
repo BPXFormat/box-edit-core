@@ -26,6 +26,14 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-pub mod model;
-pub mod util;
-mod interface;
+#ifndef BPX_BPXSD_H
+#define BPX_BPXSD_H
+
+#include <BPXEditCore/common.h>
+#include <BPXEditCore/tree.h>
+
+BPX_NULLABLE BPX_API bpx_node_t* bpxsd_read_from_bytes(bpx_bytes_const_t buffer);
+
+BPX_NULLABLE BPX_API bpx_node_t* bpxsd_read_from_section(BPX_NONNULL const bpx_container_t* container, bpx_section_handle_t section);
+
+#endif
