@@ -26,64 +26,55 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef BPX_COMMON_H
-#define BPX_COMMON_H
+#ifndef BPX_VALUE_H
+#define BPX_VALUE_H
 
-#include <stdbool.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <stdint.h>
+#include <BPXEditCore/common.h>
 
-#include <BPXEditCore/marker.h>
+typedef void bpx_value_t;
 
-typedef BPX_NONNULL uint32_t bpx_section_handle_t;
+typedef enum bpx_value_type_e {
+    BPX_VALUE_TYPE_NULL = 0,
+    BPX_VALUE_TYPE_INT8,
+    BPX_VALUE_TYPE_UINT8,
+    BPX_VALUE_TYPE_INT16,
+    BPX_VALUE_TYPE_UINT16,
+    BPX_VALUE_TYPE_INT32,
+    BPX_VALUE_TYPE_UINT32,
+    BPX_VALUE_TYPE_INT64,
+    BPX_VALUE_TYPE_UINT64,
+    BPX_VALUE_TYPE_FLOAT,
+    BPX_VALUE_TYPE_DOUBLE,
+    BPX_VALUE_TYPE_BOOLEAN,
+    BPX_VALUE_TYPE_STRING
+} bpx_value_type_t;
 
-typedef enum bpx_seek_from_e {
-    BPX_SEEK_FROM_START = 0,
-    BPX_SEEK_FROM_CURRENT,
-    BPX_SEEK_FROM_END
-} bpx_seek_from_t;
+BPX_API bpx_value_type_t bpx_value_get_type(BPX_NONNULL const bpx_value_t* value);
 
-typedef struct bpx_section_header_s {
-    uint64_t pointer;
-    uint32_t csize;
-    uint32_t size;
-    uint32_t chksum;
-    uint8_t type;
-    uint8_t flags;
-} bpx_section_header_t;
+BPX_API bool bpx_value_is_null(BPX_NONNULL const bpx_value_t* value);
 
-typedef struct bpx_section_info_s {
-    bpx_section_header_t header;
-    uint32_t index;
-    bpx_section_handle_t handle;
-} bpx_section_info_t;
+BPX_API int8_t bpx_value_get_int8(BPX_NONNULL const bpx_value_t* value);
 
-typedef struct bpx_main_header_s {
-    char signature[3];
-    char type;
-    uint32_t chksum;
-    uint64_t file_size;
-    uint32_t section_num;
-    uint32_t version;
-    uint8_t type_ext[16];
-} bpx_main_header_t;
+BPX_API uint8_t bpx_value_get_uint8(BPX_NONNULL const bpx_value_t* value);
 
-typedef void bpx_container_t;
+BPX_API int16_t bpx_value_get_int16(BPX_NONNULL const bpx_value_t* value);
 
-#define BPX_SLICE(name, type, value) typedef struct bpx_##name##_s { \
-    BPX_NONNULL type* value;                                         \
-    size_t len;                                                      \
-} bpx_##name##_t;
+BPX_API uint16_t bpx_value_get_uint16(BPX_NONNULL const bpx_value_t* value);
 
-BPX_SLICE(bytes, uint8_t, bytes);
-BPX_SLICE(bytes_const, const uint8_t, bytes);
-BPX_SLICE(section_list, const bpx_section_info_t, sections);
+BPX_API int32_t bpx_value_get_int32(BPX_NONNULL const bpx_value_t* value);
 
-#define BPX_BYTES(ptr, len) (bpx_bytes_t){ ptr, len }
-#define BPX_BYTES_CONST(ptr, len) (bpx_bytes_const_t){ ptr, len }
+BPX_API uint32_t bpx_value_get_uint32(BPX_NONNULL const bpx_value_t* value);
 
-typedef float float32_t;
-typedef double float64_t;
+BPX_API int64_t bpx_value_get_int64(BPX_NONNULL const bpx_value_t* value);
+
+BPX_API uint64_t bpx_value_get_uint64(BPX_NONNULL const bpx_value_t* value);
+
+BPX_API float32_t bpx_value_get_float(BPX_NONNULL const bpx_value_t* value);
+
+BPX_API float32_t bpx_value_get_double(BPX_NONNULL const bpx_value_t* value);
+
+BPX_API bool bpx_value_get_boolean(BPX_NONNULL const bpx_value_t* value);
+
+BPX_NULLABLE BPX_API const char* bpx_value_get_string(BPX_NONNULL const bpx_value_t* value);
 
 #endif

@@ -29,11 +29,9 @@
 #ifndef BPX_TREE_H
 #define BPX_TREE_H
 
-#include <BPXEditCore/common.h>
+#include <BPXEditCore/value.h>
 
 typedef void bpx_node_t;
-
-typedef void bpx_value_t;
 
 BPX_SLICE(node_children_list, const bpx_node_t*, nodes)
 
@@ -46,33 +44,5 @@ BPX_NONNULL BPX_API const bpx_value_t* bpx_node_get_value(BPX_NONNULL const bpx_
 BPX_NULLABLE BPX_API const bpx_node_t* bpx_node_get_details(BPX_NONNULL const bpx_node_t* node);
 
 BPX_API bpx_node_children_list_t bpx_node_get_children(BPX_NONNULL const bpx_node_t* node);
-
-BPX_API bpx_value_type_t bpx_value_get_type(BPX_NONNULL const bpx_value_t* value);
-
-BPX_API bool bpx_value_is_null(BPX_NONNULL const bpx_value_t* value);
-
-BPX_API int8_t bpx_value_get_int8(BPX_NONNULL const bpx_value_t* value);
-
-BPX_API uint8_t bpx_value_get_uint8(BPX_NONNULL const bpx_value_t* value);
-
-BPX_API int16_t bpx_value_get_int16(BPX_NONNULL const bpx_value_t* value);
-
-BPX_API uint16_t bpx_value_get_uint16(BPX_NONNULL const bpx_value_t* value);
-
-BPX_API int32_t bpx_value_get_int32(BPX_NONNULL const bpx_value_t* value);
-
-BPX_API uint32_t bpx_value_get_uint32(BPX_NONNULL const bpx_value_t* value);
-
-BPX_API int64_t bpx_value_get_int64(BPX_NONNULL const bpx_value_t* value);
-
-BPX_API uint64_t bpx_value_get_uint64(BPX_NONNULL const bpx_value_t* value);
-
-BPX_API float32_t bpx_value_get_float(BPX_NONNULL const bpx_value_t* value);
-
-BPX_API float32_t bpx_value_get_double(BPX_NONNULL const bpx_value_t* value);
-
-BPX_API bool bpx_value_get_boolean(BPX_NONNULL const bpx_value_t* value);
-
-BPX_NULLABLE BPX_API const char* bpx_value_get_string(BPX_NONNULL const bpx_value_t* value);
 
 #endif
