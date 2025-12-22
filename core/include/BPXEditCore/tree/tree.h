@@ -29,7 +29,7 @@
 #ifndef BPX_TREE_H
 #define BPX_TREE_H
 
-#include <BPXEditCore/value.h>
+#include <BPXEditCore/tree/value.h>
 
 typedef void bpx_node_t;
 
