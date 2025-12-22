@@ -27,12 +27,12 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 use std::ffi::CString;
-use bp3d_sdk_util::simple_error;
+use bp3d_util::simple_error;
 use crate::tree::model::{Node, Value};
 use std::fmt::{Display, Formatter};
 
 simple_error! {
-    Error {
+    pub Error {
         UnsupportedValue => "unsupported value",
         InvalidString => "invalid string",
         TypeError(bpx::sd::error::TypeError) => "BPXSD type error {}"

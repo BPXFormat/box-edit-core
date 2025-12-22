@@ -30,6 +30,7 @@ use safer_ffi::prelude::*;
 
 #[derive_ReprC]
 #[repr(opaque)]
+#[derive(Clone)]
 pub enum Value {
     Null,
     Int8(i8),
@@ -81,6 +82,81 @@ impl Value {
             Value::Double(_) => ValueType::Double,
             Value::Boolean(_) => ValueType::Boolean,
             Value::String(_) => ValueType::String,
+        }
+    }
+
+    pub fn as_i64(&self) -> i64 {
+        match self {
+            Value::Int8(v) => *v as _,
+            Value::UInt8(v) => *v as _,
+            Value::Int16(v) => *v as _,
+            Value::UInt16(v) => *v as _,
+            Value::Int32(v) => *v as _,
+            Value::UInt32(v) => *v as _,
+            Value::Int64(v) => *v,
+            Value::UInt64(v) => *v as _,
+            Value::Float(v) => *v as _,
+            Value::Double(v) => *v as _,
+            Value::Boolean(v) => if *v { 1 } else { 0 }
+            _ => 0
+        }
+    }
+
+    pub fn as_u64(&self) -> u64 {
+        match self {
+            Value::Int8(v) => *v as _,
+            Value::UInt8(v) => *v as _,
+            Value::Int16(v) => *v as _,
+            Value::UInt16(v) => *v as _,
+            Value::Int32(v) => *v as _,
+            Value::UInt32(v) => *v as _,
+            Value::Int64(v) => *v as _,
+            Value::UInt64(v) => *v,
+            Value::Float(v) => *v as _,
+            Value::Double(v) => *v as _,
+            Value::Boolean(v) => if *v { 1 } else { 0 }
+            _ => 0
+        }
+    }
+
+    pub fn as_f64(&self) -> f64 {
+        match self {
+            Value::Int8(v) => *v as _,
+            Value::UInt8(v) => *v as _,
+            Value::Int16(v) => *v as _,
+            Value::UInt16(v) => *v as _,
+            Value::Int32(v) => *v as _,
+            Value::UInt32(v) => *v as _,
+            Value::Int64(v) => *v as _,
+            Value::UInt64(v) => *v as _,
+            Value::Float(v) => *v as _,
+            Value::Double(v) => *v,
+            Value::Boolean(v) => if *v { 1.0 } else { 0.0 }
+            _ => 0.0
+        }
+    }
+
+    pub fn as_bool(&self) -> bool {
+        match self {
+            Value::Int8(v) => *v != 0,
+            Value::UInt8(v) => *v != 0,
+            Value::Int16(v) => *v != 0,
+            Value::UInt16(v) => *v != 0,
+            Value::Int32(v) => *v != 0,
+            Value::UInt32(v) => *v != 0,
+            Value::Int64(v) => *v != 0,
+            Value::UInt64(v) => *v != 0,
+            Value::Float(v) => *v != 0.0,
+            Value::Double(v) => *v != 0.0,
+            Value::Boolean(v) => *v,
+            _ => false
+        }
+    }
+
+    pub fn as_str(&self) -> &str {
+        match self {
+            Value::String(v) => v.to_str(),
+            _ => ""
         }
     }
 }

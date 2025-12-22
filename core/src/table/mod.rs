@@ -26,11 +26,5 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-mod container;
-mod error;
-mod section;
-mod stream;
-mod common;
-mod tree;
-mod bpxsd;
-mod table;
+mod core;
+mod row;
