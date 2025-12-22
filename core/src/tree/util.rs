@@ -29,7 +29,6 @@
 use std::ffi::CString;
 use bp3d_util::simple_error;
 use crate::tree::model::{Node, Value};
-use std::fmt::{Display, Formatter};
 
 simple_error! {
     pub Error {
