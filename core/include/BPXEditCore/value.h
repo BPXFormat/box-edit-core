@@ -51,6 +51,8 @@ typedef enum bpx_value_type_e {
 
 BPX_API bpx_value_type_t bpx_value_get_type(BPX_NONNULL const bpx_value_t* value);
 
+/* Getters */
+
 BPX_API bool bpx_value_is_null(BPX_NONNULL const bpx_value_t* value);
 
 BPX_API int8_t bpx_value_get_int8(BPX_NONNULL const bpx_value_t* value);
@@ -76,5 +78,33 @@ BPX_API float32_t bpx_value_get_double(BPX_NONNULL const bpx_value_t* value);
 BPX_API bool bpx_value_get_boolean(BPX_NONNULL const bpx_value_t* value);
 
 BPX_NULLABLE BPX_API const char* bpx_value_get_string(BPX_NONNULL const bpx_value_t* value);
+
+/* Setters */
+
+BPX_API void bpx_value_set_null(BPX_NONNULL bpx_value_t* value);
+
+BPX_API void bpx_value_set_int8(BPX_NONNULL bpx_value_t* value, int8_t v);
+
+BPX_API void bpx_value_set_uint8(BPX_NONNULL bpx_value_t* value, uint8_t v);
+
+BPX_API void bpx_value_set_int16(BPX_NONNULL bpx_value_t* value, int16_t v);
+
+BPX_API void bpx_value_set_uint16(BPX_NONNULL bpx_value_t* value, uint8_t v);
+
+BPX_API void bpx_value_set_int32(BPX_NONNULL bpx_value_t* value, int32_t v);
+
+BPX_API void bpx_value_set_uint32(BPX_NONNULL bpx_value_t* value, uint32_t v);
+
+BPX_API void bpx_value_set_int64(BPX_NONNULL bpx_value_t* value, int64_t v);
+
+BPX_API void bpx_value_set_uint64(BPX_NONNULL bpx_value_t* value, uint64_t v);
+
+BPX_API void bpx_value_set_float(BPX_NONNULL bpx_value_t* value, float v);
+
+BPX_API void bpx_value_set_double(BPX_NONNULL bpx_value_t* value, double v);
+
+BPX_API void bpx_value_set_boolean(BPX_NONNULL bpx_value_t* value, bool v);
+
+BPX_API void bpx_value_set_string(BPX_NONNULL bpx_value_t* value, BPX_NONNULL const char* v);
 
 #endif

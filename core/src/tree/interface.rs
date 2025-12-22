@@ -65,83 +65,60 @@ pub fn bpx_value_is_null(value: &Value) -> bool {
 }
 
 #[ffi_export]
-pub fn bpx_value_get_int8(value: &Value) -> i8 {
-    match value {
-        Value::Int8(v) => *v,
-        _ => 0
-    }
+pub fn bpx_value_set_null(value: &mut Value) {
+    *value = Value::Null;
 }
 
-#[ffi_export]
-pub fn bpx_value_get_uint8(value: &Value) -> u8 {
-    match value {
-        Value::UInt8(v) => *v,
-        _ => 0
-    }
+macro_rules! fn_get_num {
+    ($($name: ident => $vname: ident: $t: ty),*) => {
+        $(
+            #[ffi_export]
+            pub fn $name(value: &Value) -> $t {
+                match value {
+                    Value::$vname(v) => *v,
+                    _ => 0 as $t
+                }
+            }
+        )*
+    };
 }
 
-#[ffi_export]
-pub fn bpx_value_get_int16(value: &Value) -> i16 {
-    match value {
-        Value::Int16(v) => *v,
-        _ => 0
-    }
+fn_get_num! {
+    bpx_value_get_int8 => Int8: i8,
+    bpx_value_get_uint8 => UInt8: u8,
+    bpx_value_get_int16 => Int16: i16,
+    bpx_value_get_uint16 => UInt16: u16,
+    bpx_value_get_int32 => Int32: i32,
+    bpx_value_get_uint32 => UInt32: u32,
+    bpx_value_get_int64 => Int64: i64,
+    bpx_value_get_uint64 => UInt64: u64,
+    bpx_value_get_float => Float: f32,
+    bpx_value_get_double => Double: f64
 }
 
-#[ffi_export]
-pub fn bpx_value_get_uint16(value: &Value) -> u16 {
-    match value {
-        Value::UInt16(v) => *v,
-        _ => 0
-    }
+macro_rules! fn_set_num {
+    ($($name: ident => $vname: ident: $t: ty),*) => {
+        $(
+            #[ffi_export]
+            pub fn $name(value: &mut Value, v: $t) {
+                *value = Value::$vname(v);
+            }
+        )*
+    };
 }
 
-#[ffi_export]
-pub fn bpx_value_get_int32(value: &Value) -> i32 {
-    match value {
-        Value::Int32(v) => *v,
-        _ => 0
-    }
-}
-
-#[ffi_export]
-pub fn bpx_value_get_uint32(value: &Value) -> u32 {
-    match value {
-        Value::UInt32(v) => *v,
-        _ => 0
-    }
-}
-
-#[ffi_export]
-pub fn bpx_value_get_int64(value: &Value) -> i64 {
-    match value {
-        Value::Int64(v) => *v,
-        _ => 0
-    }
-}
-
-#[ffi_export]
-pub fn bpx_value_get_uint64(value: &Value) -> u64 {
-    match value {
-        Value::UInt64(v) => *v,
-        _ => 0
-    }
-}
-
-#[ffi_export]
-pub fn bpx_value_get_float(value: &Value) -> f32 {
-    match value {
-        Value::Float(v) => *v,
-        _ => 0.0
-    }
-}
-
-#[ffi_export]
-pub fn bpx_value_get_double(value: &Value) -> f64 {
-    match value {
-        Value::Double(v) => *v,
-        _ => 0.0
-    }
+fn_set_num! {
+    bpx_value_set_int8 => Int8: i8,
+    bpx_value_set_uint8 => UInt8: u8,
+    bpx_value_set_int16 => Int16: i16,
+    bpx_value_set_uint16 => UInt16: u16,
+    bpx_value_set_int32 => Int32: i32,
+    bpx_value_set_uint32 => UInt32: u32,
+    bpx_value_set_int64 => Int64: i64,
+    bpx_value_set_uint64 => UInt64: u64,
+    bpx_value_set_float => Float: f32,
+    bpx_value_set_double => Double: f64,
+    bpx_value_set_boolean => Boolean: bool
 }
 
 #[ffi_export]
@@ -158,4 +135,9 @@ pub fn bpx_value_get_string(value: &Value) -> Option<char_p::Ref<'_>> {
         Value::String(v) => Some(v.as_ref()),
         _ => None
     }
+}
+
+#[ffi_export]
+pub fn bpx_value_set_string(value: &mut Value, v: char_p::Ref<'_>) {
+    *value = Value::String(v.to_owned())
 }
