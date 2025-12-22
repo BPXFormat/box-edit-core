@@ -48,6 +48,7 @@ pub struct Table {
 pub fn bpx_table_create(container: &mut Container, strings: u32, name: char_p::Ref<'_>) -> Option<repr_c::Box<Table>> {
     let strings = unsafe { Handle::from_raw(strings) };
     let inner = unwrap_result(RawTable::create(&mut container.underlying, name.to_str(), strings))?;
+    container.refresh();
     Some(Box::new(Table { inner, name: name.to_owned(), container }).into())
 }
 

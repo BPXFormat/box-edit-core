@@ -67,7 +67,12 @@ impl IntoBPXError for tree::util::Error {
 
 impl IntoBPXError for bpx::table::error::Error {
     const CODE: i32 = 6;
-    const DOMAIN: &'static CStr = c"Table";
+    const DOMAIN: &'static CStr = c"BPX Table";
+}
+
+impl IntoBPXError for bpx::strings::Error {
+    const CODE: i32 = 7;
+    const DOMAIN: &'static CStr = c"BPX String";
 }
 
 #[derive(Debug)]
@@ -77,7 +82,8 @@ pub enum RustError {
     Type(bpx::sd::error::TypeError),
     Io(std::io::Error),
     Tree(tree::util::Error),
-    Table(bpx::table::error::Error)
+    Table(bpx::table::error::Error),
+    String(bpx::strings::Error)
 }
 
 impl Display for RustError {
@@ -89,6 +95,7 @@ impl Display for RustError {
             RustError::Io(e) => write!(f, "Io error: {}", e),
             RustError::Tree(e) => write!(f, "Tree error: {}", e),
             RustError::Table(e) => write!(f, "Table error: {}", e),
+            RustError::String(e) => write!(f, "String error: {}", e),
         }
     }
 }
@@ -100,7 +107,8 @@ bpx::impl_err_conversion! (
         bpx::sd::error::TypeError => Type,
         std::io::Error => Io,
         tree::util::Error => Tree,
-        bpx::table::error::Error => Table
+        bpx::table::error::Error => Table,
+        bpx::strings::Error => String
     }
 );
 

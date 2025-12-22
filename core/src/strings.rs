@@ -26,12 +26,22 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-mod container;
-mod error;
-mod section;
-mod stream;
-mod common;
-mod tree;
-mod bpxsd;
-mod table;
-mod strings;
+use bpx::core::Handle;
+use bpx::strings::{load_string_section, StringSection};
+use safer_ffi::prelude::*;
+use crate::common::Container;
+use crate::error::unwrap_result;
+
+#[ffi_export]
+pub fn bpx_strings_create(container: &mut Container) -> u32 {
+    let strings = StringSection::create(&mut container.underlying);
+    container.refresh();
+    strings.handle().into_raw()
+}
+
+#[ffi_export]
+pub fn bpx_strings_load(container: &Container, handle: u32) -> bool {
+    let handle = unsafe { Handle::from_raw(handle) };
+    let strings = StringSection::new(handle);
+    unwrap_result(load_string_section(&container.underlying, &strings)).map(|()| true).unwrap_or(false)
+}
