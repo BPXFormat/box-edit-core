@@ -32,7 +32,7 @@ use bpx::table::column::Type;
 use bpx::table::core::RawTable;
 use safer_ffi::prelude::*;
 use crate::common::Container;
-use crate::error::unwrap_result;
+use crate::error::{set_last_error, unwrap_result};
 use crate::table::row::Row;
 use crate::tree::model::ValueType;
 
@@ -166,6 +166,30 @@ pub fn bpx_table_get_row_count(table: &Table, row: &Row) -> isize {
     match data {
         None => -1,
         Some(value) => bpx::table::row::count(&*value, &row.inner) as _
+    }
+}
+
+#[ffi_export]
+pub fn bpx_table_get_column_index(table: &Table, name: char_p::Ref<'_>) -> isize {
+    let container = unsafe { &*table.container };
+    let columns = table.inner.columns(&container.underlying);
+    let column = unwrap_result(columns.find(name.to_str()));
+    match column {
+        Some(v) => match v {
+            Some(v) => {
+                for (index, column) in columns.iter().enumerate() {
+                    if column.name == v.name {
+                        return index as _;
+                    }
+                }
+                unreachable!();
+            }
+            None => {
+                set_last_error(bpx::table::error::Error::ColumnNotFound(name.to_str().into()));
+                -1
+            }
+        }
+        None => -1,
     }
 }
 

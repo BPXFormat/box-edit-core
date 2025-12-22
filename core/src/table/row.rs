@@ -122,7 +122,7 @@ impl Row {
 }
 
 #[ffi_export]
-pub fn bpx_table_row_alloc(table: &Table) -> repr_c::Box<Row> {
+pub fn bpx_table_row_create(table: &Table) -> repr_c::Box<Row> {
     Box::new(Row::new(table.inner.alloc_row(), table)).into()
 }
 
