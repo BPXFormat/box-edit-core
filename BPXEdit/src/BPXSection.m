@@ -22,6 +22,7 @@
 // IN THE SOFTWARE.
 
 #import "BPXEdit/BPXSection.h"
+#import "BPXEdit/Util.h"
 
 @implementation BPXSection {
     bpx_section_handle_t _handle;
@@ -36,6 +37,15 @@
 
 -(uint32_t)index {
     return _index;
+}
+
+-(ssize_t)sizeWithError:(NSError**)error {
+    ssize_t res = bpx_section_size(_parent.rawHandle, _handle);
+    if (res == -1) {
+        *error = BPXEditGetLastError();
+        return -1;
+    }
+    return res;
 }
 
 -(bpx_section_handle_t)rawHandle {
@@ -53,7 +63,7 @@
 -_internal_init_new:(BPXContainer*)parent handle:(bpx_section_handle_t)handle {
     bpx_section_list_t list = bpx_container_get_sections(parent.rawHandle);
     const bpx_section_info_t* infos = NULL;
-    for (size_t i = list.count; i != 0; --i) {
+    for (size_t i = list.len; i != 0; --i) {
         infos = &list.sections[i - 1];
         if (infos->handle == handle)
             break;

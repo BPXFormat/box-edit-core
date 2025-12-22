@@ -25,6 +25,8 @@
 #include <BPXEditCore/section.h>
 #import <BPXEdit/BPXContainer.h>
 
+//TODO: Support mutation of section header
+
 typedef NS_OPTIONS(uint8_t, BPXSectionOptions) {
     BPXSectionOptionsCompressXZ = FLAG_COMPRESS_XZ,
     BPXSectionOptionsCheckWeak = FLAG_CHECK_WEAK,
@@ -49,6 +51,8 @@ typedef bpx_section_header_t BPXSectionHeader;
 -(instancetype)initInContainer:(BPXContainer*)parent type:(uint8_t)ty;
 
 -remove;
+
+-(ssize_t)sizeWithError:(NSError**)error;
 
 @end
 

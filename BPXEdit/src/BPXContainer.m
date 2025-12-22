@@ -45,7 +45,7 @@
     _stream = stream;
     _sections = [[NSMutableArray alloc] init];
     bpx_section_list_t list = bpx_container_get_sections(_handle);
-    for (size_t i = 0; i != list.count; ++i) {
+    for (size_t i = 0; i != list.len; ++i) {
         BPXSection* obj = [[BPXSection alloc] initFromContainer:self infos:&list.sections[i]];
         [_sections addObject:obj];
     }
@@ -71,7 +71,7 @@
 
 -addSection:(BPXSection*)section {
     bpx_section_list_t list = bpx_container_get_sections(_handle);
-    assert(list.sections[list.count - 1].handle == section.rawHandle);
+    assert(list.sections[list.len - 1].handle == section.rawHandle);
     [_sections addObject:section];
 }
 
