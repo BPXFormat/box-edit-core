@@ -25,6 +25,8 @@
 #include <BPXEditCore/section.h>
 #import <BPXEdit/BPXContainer.h>
 
+@class BPXTable;
+
 //TODO: Support mutation of section header
 
 typedef NS_OPTIONS(uint8_t, BPXSectionOptions) {
@@ -53,6 +55,10 @@ typedef bpx_section_header_t BPXSectionHeader;
 -remove;
 
 -(ssize_t)sizeWithError:(NSError**)error;
+
++(instancetype)createStrings:(BPXContainer*)parent;
++(nullable BPXTable*)createTable:(BPXContainer*)parent strings:(BPXSection*)strings name:(const NSString*)name error:(NSError**)error;
+-(nullable BPXTable*)openTable:(BPXSection*)strings error:(NSError**)error;
 
 @end
 

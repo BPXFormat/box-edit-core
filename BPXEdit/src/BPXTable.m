@@ -21,20 +21,44 @@
 // DEALINGS
 // IN THE SOFTWARE.
 
-#import <Foundation/Foundation.h>
-#import <BPXEdit/DataStream.h>
-#include <BPXEditCore/stream.h>
-#import <BPXEdit/BPXContainer.h>
+#import "BPXEdit/BPXTable.h"
 
-NS_ASSUME_NONNULL_BEGIN
+@implementation BPXTable {
+    bpx_table_t* _table;
+    BPXSection* _parent;
+    BPXSection* _strings;
+}
 
-@interface BPXStream : NSObject
+-(instancetype)initFromSection:(BPXSection*)parent strings:(BPXSection*)strings rawHandle:(bpx_table_t*)table {
+    _table = table;
+    _parent = parent;
+    _strings = strings;
+    return self;
+}
 
-@property(readonly) bpx_stream_t* rawHandle;
+-(bpx_table_t*)rawHandle {
+    return _table;
+}
 
--(instancetype)initFromDataStream:(id<DataStream>)stream;
--(nullable instancetype)initFromFile:(NSString *)path create:(BOOL)create withError:(NSError **)error;
+-(BPXSection*)section {
+    return _parent;
+}
+
+-(BPXSection*)strings {
+    return _strings;
+}
+
+-(NSString*)name {
+    const char* name = bpx_table_get_name(_table);
+    return [NSString stringWithUTF8String:name];
+}
+
+-(size_t)rowSize {
+    return bpx_table_get_row_size(_table);
+}
+
+-(size_t)actualRowSize {
+    return bpx_table_get_actual_row_size(_table);
+}
 
 @end
-
-NS_ASSUME_NONNULL_END

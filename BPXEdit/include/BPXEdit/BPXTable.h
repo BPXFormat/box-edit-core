@@ -21,19 +21,23 @@
 // DEALINGS
 // IN THE SOFTWARE.
 
-#import <Foundation/Foundation.h>
-#import <BPXEdit/DataStream.h>
-#include <BPXEditCore/stream.h>
 #import <BPXEdit/BPXContainer.h>
+#import <BPXEdit/BPXSection.h>
+#include <BPXEditCore/table/core.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BPXStream : NSObject
+@interface BPXTable : NSObject
 
-@property(readonly) bpx_stream_t* rawHandle;
+@property(readonly) bpx_table_t* rawHandle;
+@property(readonly) BPXSection* section;
+@property(readonly) BPXSection* strings;
 
--(instancetype)initFromDataStream:(id<DataStream>)stream;
--(nullable instancetype)initFromFile:(NSString *)path create:(BOOL)create withError:(NSError **)error;
+@property(readonly) NSString* name;
+@property(readonly) size_t rowSize;
+@property(readonly) size_t actualRowSize;
+
+-(instancetype)initFromSection:(BPXSection*)parent strings:(BPXSection*)strings rawHandle:(bpx_table_t*)table;
 
 @end
 

@@ -23,6 +23,8 @@
 
 #import "BPXEdit/BPXSection.h"
 #import "BPXEdit/Util.h"
+#include <BPXEditCore/strings.h>
+#import "BPXEdit/BPXTable.h"
 
 @implementation BPXSection {
     bpx_section_handle_t _handle;
@@ -58,6 +60,7 @@
     _handle = infos->handle;
     _index = infos->index;
     _header = infos->header;
+    return self;
 }
 
 -_internal_init_new:(BPXContainer*)parent handle:(bpx_section_handle_t)handle {
@@ -79,6 +82,7 @@
     opts.type = ty;
     bpx_section_handle_t handle = bpx_section_create(parent.rawHandle, &opts);
     [self _internal_init_new:parent handle:handle];
+    return self;
 }
 
 -(instancetype)initInContainer:(BPXContainer*)parent type:(uint8_t)ty {
@@ -87,10 +91,38 @@
     opts.type = ty;
     bpx_section_handle_t handle = bpx_section_create(parent.rawHandle, &opts);
     [self _internal_init_new:parent handle:handle];
+    return self;
 }
 
 -remove {
     [_parent removeSection:self];
+}
+
++(instancetype)createStrings:(BPXContainer*)parent {
+    bpx_section_handle_t handle = bpx_strings_create(parent.rawHandle);
+    BPXSection* section = [[BPXSection alloc] init];
+    [section _internal_init_new:parent handle:handle];
+    return section;
+}
+
++(nullable BPXTable*)createTable:(BPXContainer*)parent strings:(BPXSection*)strings name:(const NSString*)name error:(NSError**)error {
+    bpx_table_t* table = bpx_table_create(parent.rawHandle, strings.rawHandle, name.UTF8String);
+    if (table == NULL) {
+        *error = BPXEditGetLastError();
+        return nil;
+    }
+    BPXSection* section = [[BPXSection alloc] init];
+    [section _internal_init_new:parent handle:bpx_table_handle(table)];
+    return [[BPXTable alloc] initFromSection:section strings:strings rawHandle:table];
+}
+
+-(nullable BPXTable*)openTable:(BPXSection*)strings error:(NSError**)error {
+    bpx_table_t* table = bpx_table_open(_parent.rawHandle, _handle, strings.rawHandle);
+    if (table == NULL) {
+        *error = BPXEditGetLastError();
+        return nil;
+    }
+    return [[BPXTable alloc] initFromSection:self strings:strings rawHandle:table];
 }
 
 @end
