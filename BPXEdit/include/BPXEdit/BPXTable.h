@@ -23,9 +23,22 @@
 
 #import <BPXEdit/BPXContainer.h>
 #import <BPXEdit/BPXSection.h>
+#import <BPXEdit/BPXValue.h>
 #include <BPXEditCore/table/core.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+@interface BPXRow : NSObject
+
+@property(readonly) bpx_table_row_t* rawHandle;
+
+-setFree:(bool)free;
+
+-(bool)isFree;
+
+-(BPXValue*)objectAtIndexedSubscript:(NSInteger)index;
+
+@end
 
 @interface BPXTable : NSObject
 
@@ -38,6 +51,22 @@ NS_ASSUME_NONNULL_BEGIN
 @property(readonly) size_t actualRowSize;
 
 -(instancetype)initFromSection:(BPXSection*)parent strings:(BPXSection*)strings rawHandle:(bpx_table_t*)table;
+
+-(NSInteger)addColumn:(NSString*)name type:(BPXValueType)type len:(uint16_t)len error:(NSError**)error;
+
+-removeColumn:(NSInteger)index;
+
+-(NSInteger)rowCount:(NSError**)error;
+
+-(NSInteger)columnIndex:(NSString*)name error:(NSError**)error;
+
+-(BPXRow*)getRow;
+
+-(nullable BPXRow*)read:(NSInteger)index error:(NSError**)error;
+
+-(bool)write:(BPXRow*)row index:(NSInteger)index error:(NSError**)error;
+
+-(NSInteger)append:(BPXRow*)row error:(NSError**)error;
 
 @end
 
