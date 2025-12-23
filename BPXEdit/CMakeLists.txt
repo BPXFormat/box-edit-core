@@ -35,4 +35,6 @@ set_target_properties(BPXEdit PROPERTIES
         SOVERSION 1.0.0
         PUBLIC_HEADER BPXEdit.h
         XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER com.github.BPXEdit
+        XCODE_EMBED_FRAMEWORKS ${CMAKE_CURRENT_SOURCE_DIR}/../core/target/BPXEditCore.xcframework
+        XCODE_EMBED_FRAMEWORKS_CODE_SIGN_ON_COPY ON
 )
