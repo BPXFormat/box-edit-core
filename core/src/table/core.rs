@@ -194,6 +194,12 @@ pub fn bpx_table_get_column_index(table: &Table, name: char_p::Ref<'_>) -> isize
 }
 
 #[ffi_export]
+pub fn bpx_table_get_columns(table: &Table) -> usize {
+    let container = unsafe { &*table.container };
+    table.inner.columns(&container.underlying).len()
+}
+
+#[ffi_export]
 pub fn bpx_table_destroy(table: repr_c::Box<Table>) {
     drop(table);
 }

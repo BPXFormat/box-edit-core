@@ -18,6 +18,8 @@ BPX_API ssize_t bpx_table_column_create(BPX_NONNULL bpx_table_t* table, BPX_NONN
 
 BPX_API void bpx_table_column_remove_at(BPX_NONNULL bpx_table_t* table, ssize_t index);
 
+BPX_API size_t bpx_table_get_columns(BPX_NONNULL const bpx_table_t* table);
+
 BPX_API size_t bpx_table_get_row_size(BPX_NONNULL const bpx_table_t* table);
 
 BPX_API size_t bpx_table_get_actual_row_size(BPX_NONNULL const bpx_table_t* table);
