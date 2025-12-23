@@ -127,6 +127,16 @@ pub fn bpx_table_row_create(table: &Table) -> repr_c::Box<Row> {
 }
 
 #[ffi_export]
+pub fn bpx_table_row_set_free(row: &mut Row, flag: bool) {
+    row.inner.set_free(flag);
+}
+
+#[ffi_export]
+pub fn bpx_table_row_is_free(row: &Row) -> bool {
+    row.inner.is_free()
+}
+
+#[ffi_export]
 pub fn bpx_table_row_get_value_const(row: &Row, index: usize) -> &Value {
     &row.value[index]
 }
