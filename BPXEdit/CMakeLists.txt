@@ -10,12 +10,14 @@ set(SRC
         include/BPXEdit/BPXContainer.h
         include/BPXEdit/BPXSection.h
         include/BPXEdit/BPXTable.h
+        include/BPXEdit/BPXValue.h
         src/NSDataStream.m
         src/BPXStream.m
         src/BPXSection.m
         src/Util.m
         src/BPXContainer.m
         src/BPXTable.m
+        src/BPXValue.m
 )
 
 add_library(BPXEdit SHARED ${SRC})
