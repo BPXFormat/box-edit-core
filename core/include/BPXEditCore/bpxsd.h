@@ -30,7 +30,7 @@
 #define BPX_BPXSD_H
 
 #include <BPXEditCore/common.h>
-#include <BPXEditCore/tree.h>
+#include <BPXEditCore/tree/tree.h>
 
 BPX_NULLABLE BPX_API bpx_node_t* bpxsd_read_from_bytes(bpx_bytes_const_t buffer);
 
