@@ -26,76 +26,22 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#import <BPXEdit/BPXContainer.h>
-#import <BPXEdit/BPXSection.h>
-#include <BPXEditCore/tree/value.h>
+#import <Foundation/Foundation.h>
+#include <BPXEditCore/error.h>
+#include <string.h>
 
-typedef NS_ENUM(int32_t, BPXValueType) {
-    BPXValueTypeNull = BPX_VALUE_TYPE_NULL,
-    BPXValueTypeInt8,
-    BPXValueTypeUint8,
-    BPXValueTypeInt16,
-    BPXValueTypeUint16,
-    BPXValueTypeInt32,
-    BPXValueTypeUint32,
-    BPXValueTypeInt64,
-    BPXValueTypeUint64,
-    BPXValueTypeFloat,
-    BPXValueTypeDouble,
-    BPXValueTypeBoolean,
-    BPXValueTypeString
-};
-
-NS_ASSUME_NONNULL_BEGIN
-
-@interface BPXValue : NSObject
-
-@property(readonly) bpx_value_t* rawHandle;
-@property(readonly) BPXValueType type;
-
-@property(readonly) int8_t i8;
-@property(readonly) int16_t i16;
-@property(readonly) int32_t i32;
-@property(readonly) int64_t i64;
-@property(readonly) uint8_t u8;
-@property(readonly) uint16_t u16;
-@property(readonly) uint32_t u32;
-@property(readonly) uint64_t u64;
-@property(readonly) float f;
-@property(readonly) double d;
-@property(readonly) bool b;
-@property(readonly, nullable) NSString* s;
-
--(instancetype)initFromRawHandle:(bpx_value_t*)value;
-
--(bool)isNull;
-
--(int64_t)toInt64;
--(uint64_t)toUint64;
--(double)toDouble;
-
-@end
-
-@interface BPXMutableValue : BPXValue
-
--(instancetype)initFromRawHandle:(bpx_value_t*)value;
-
--setNull;
--setInt8:(int8_t)v;
--setInt16:(int16_t)v;
--setInt32:(int32_t)v;
--setInt64:(int64_t)v;
--setUint8:(uint8_t)v;
--setUint16:(uint16_t)v;
--setUint32:(uint32_t)v;
--setUint64:(uint64_t)v;
--setFloat:(float)v;
--setDouble:(double)v;
--setBool:(bool)v;
--setString:(NSString*)v;
-
-@end
-
-
-NS_ASSUME_NONNULL_END
-
+NSError *BPXEditGetLastError(void) {
+    int32_t code = bpx_get_last_error_code();
+    const char *name = bpx_get_last_error_name();
+    char buffer[1024];
+    memset(buffer, 0, 1024);
+    //Avoid removing the last null terminator.
+    bpx_get_last_error_message((bpx_bytes_t){ .bytes = (uint8_t *)buffer, .len = 1023 });
+    NSString *msg = [[NSString alloc] initWithCString:buffer encoding:NSUTF8StringEncoding];
+    NSDictionary<NSErrorUserInfoKey, id> *dict = @{
+        NSLocalizedDescriptionKey: msg,
+        NSDebugDescriptionErrorKey: msg
+    };
+    NSString *nameObjc = [[NSString alloc] initWithCString:name encoding: NSUTF8StringEncoding];
+    return [NSError errorWithDomain:nameObjc code:code userInfo:dict];
+}

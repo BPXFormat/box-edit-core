@@ -26,6 +26,53 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#import <Foundation/NSError.h>
+#import <BPXEdit/BPXContainer.h>
+#import <BPXEdit/BPXSection.h>
+#import <BPXEdit/BPXValue.h>
+#include <BPXEditCore/table/core.h>
 
-NSError *BPXEditGetLastError();
+NS_ASSUME_NONNULL_BEGIN
+
+@interface BPXRow : NSObject
+
+@property(readonly) bpx_table_row_t* rawHandle;
+
+-(void)setFree:(bool)free;
+
+-(bool)isFree;
+
+-(BPXValue*)objectAtIndexedSubscript:(NSInteger)index;
+
+@end
+
+@interface BPXTable : NSObject
+
+@property(readonly) bpx_table_t* rawHandle;
+@property(readonly) BPXSection* section;
+@property(readonly) BPXSection* strings;
+
+@property(readonly) NSString* name;
+@property(readonly) size_t rowSize;
+@property(readonly) size_t actualRowSize;
+
+-(instancetype)initFromSection:(BPXSection*)parent strings:(BPXSection*)strings rawHandle:(bpx_table_t*)table;
+
+-(NSInteger)addColumn:(NSString*)name type:(BPXValueType)type len:(uint16_t)len error:(NSError**)error;
+
+-(void)removeColumn:(NSInteger)index;
+
+-(NSInteger)rowCount:(NSError**)error;
+
+-(NSInteger)columnIndex:(NSString*)name error:(NSError**)error;
+
+-(BPXRow*)getRow;
+
+-(nullable BPXRow*)read:(NSInteger)index error:(NSError**)error;
+
+-(bool)write:(BPXRow*)row index:(NSInteger)index error:(NSError**)error;
+
+-(NSInteger)append:(BPXRow*)row error:(NSError**)error;
+
+@end
+
+NS_ASSUME_NONNULL_END

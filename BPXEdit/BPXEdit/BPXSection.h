@@ -27,58 +27,43 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Foundation/Foundation.h>
-#include <BPXEditCore/container.h>
+#include <BPXEditCore/section.h>
+#import <BPXEdit/BPXContainer.h>
 
-typedef NS_OPTIONS(uint8_t, BPXContainerOptions) {
-    BPXContainerOptionsIgnoreChecksum = FLAG_IGNORE_CHECKSUM,
-    BPXContainerOptionsIgnoreSignature = FLAG_IGNORE_SIGNATURE,
-    BPXContainerOptionsIgnoreVersion = FLAG_IGNORE_VERSION,
-    BPXContainerOptionsRevertOnSaveFail = FLAG_REVERT_ON_SAVE_FAIL
+@class BPXTable;
+
+//TODO: Support mutation of section header
+
+typedef NS_OPTIONS(uint8_t, BPXSectionOptions) {
+    BPXSectionOptionsCompressXZ = FLAG_COMPRESS_XZ,
+    BPXSectionOptionsCheckWeak = FLAG_CHECK_WEAK,
+    BPXSectionOptionsCompressZLIB = FLAG_COMPRESS_ZLIB,
+    BPXSectionOptionsCheckCRC32 = FLAG_CHECK_CRC32
 };
-
-typedef bpx_main_header_t BPXMainHeader;
-
-typedef struct BPXOpenOptions {
-    BPXContainerOptions options;
-    uint32_t compressionThreshold;
-    uint32_t memoryThreshold;
-} BPXOpenOptions;
-
-typedef struct BPXCreateOptions {
-    BPXContainerOptions options;
-    uint32_t compressionThreshold;
-    uint32_t memoryThreshold;
-    BPXMainHeader mainHeader;
-} BPXCreateOptions;
-
-@class BPXStream;
-@class BPXSection;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BPXContainer : NSObject
+typedef bpx_section_header_t BPXSectionHeader;
 
-//TODO: Support mutating main header
+@interface BPXSection : NSObject
 
-@property(readonly) BPXMainHeader mainHeader;
-@property(readonly) bpx_container_t* rawHandle;
-@property(readonly) NSArray<BPXSection*>* sections;
+@property(readonly) BPXSectionHeader header;
+@property(readonly) uint32_t index;
+@property(readonly) bpx_section_handle_t rawHandle;
 
--(instancetype)initFromStream:(BPXStream *)stream handle:(bpx_container_t*)handle;
+-(instancetype)initFromContainer:(BPXContainer*)parent infos:(const bpx_section_info_t*)infos;
 
--(BOOL)save:(NSError **)error;
+-(instancetype)initInContainer:(BPXContainer*)parent type:(uint8_t)ty options:(BPXSectionOptions)options compressionThreshold:(uint32_t)value;
 
--addSection:(BPXSection*)section;
+-(instancetype)initInContainer:(BPXContainer*)parent type:(uint8_t)ty;
 
--removeSection:(BPXSection*)section;
+-(void)remove;
 
-+(nullable instancetype)open:(BPXStream*)stream options:(BPXOpenOptions)options error:(NSError**)error;
+-(ssize_t)sizeWithError:(NSError**)error;
 
-+(nullable instancetype)open:(BPXStream*)stream error:(NSError**)error;
-
-+(instancetype)create:(BPXStream*)stream options:(BPXCreateOptions)options;
-
-+(instancetype)create:(BPXStream*)stream;
++(instancetype)createStrings:(BPXContainer*)parent;
++(nullable BPXTable*)createTable:(BPXContainer*)parent strings:(BPXSection*)strings name:(const NSString*)name error:(NSError**)error;
+-(nullable BPXTable*)openTable:(BPXSection*)strings error:(NSError**)error;
 
 @end
 

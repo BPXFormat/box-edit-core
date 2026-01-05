@@ -28,51 +28,74 @@
 
 #import <BPXEdit/BPXContainer.h>
 #import <BPXEdit/BPXSection.h>
-#import <BPXEdit/BPXValue.h>
-#include <BPXEditCore/table/core.h>
+#include <BPXEditCore/tree/value.h>
+
+typedef NS_ENUM(int32_t, BPXValueType) {
+    BPXValueTypeNull = BPX_VALUE_TYPE_NULL,
+    BPXValueTypeInt8,
+    BPXValueTypeUint8,
+    BPXValueTypeInt16,
+    BPXValueTypeUint16,
+    BPXValueTypeInt32,
+    BPXValueTypeUint32,
+    BPXValueTypeInt64,
+    BPXValueTypeUint64,
+    BPXValueTypeFloat,
+    BPXValueTypeDouble,
+    BPXValueTypeBoolean,
+    BPXValueTypeString
+};
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BPXRow : NSObject
+@interface BPXValue : NSObject
 
-@property(readonly) bpx_table_row_t* rawHandle;
+@property(readonly) bpx_value_t* rawHandle;
+@property(readonly) BPXValueType type;
 
--setFree:(bool)free;
+@property(readonly) int8_t i8;
+@property(readonly) int16_t i16;
+@property(readonly) int32_t i32;
+@property(readonly) int64_t i64;
+@property(readonly) uint8_t u8;
+@property(readonly) uint16_t u16;
+@property(readonly) uint32_t u32;
+@property(readonly) uint64_t u64;
+@property(readonly) float f;
+@property(readonly) double d;
+@property(readonly) bool b;
+@property(readonly, nullable) NSString* s;
 
--(bool)isFree;
+-(instancetype)initFromRawHandle:(bpx_value_t*)value;
 
--(BPXValue*)objectAtIndexedSubscript:(NSInteger)index;
+-(bool)isNull;
+
+-(int64_t)toInt64;
+-(uint64_t)toUint64;
+-(double)toDouble;
+
+@end
+
+@interface BPXMutableValue : BPXValue
+
+-(instancetype)initFromRawHandle:(bpx_value_t*)value;
+
+-(void)setNull;
+-(void)setInt8:(int8_t)v;
+-(void)setInt16:(int16_t)v;
+-(void)setInt32:(int32_t)v;
+-(void)setInt64:(int64_t)v;
+-(void)setUint8:(uint8_t)v;
+-(void)setUint16:(uint16_t)v;
+-(void)setUint32:(uint32_t)v;
+-(void)setUint64:(uint64_t)v;
+-(void)setFloat:(float)v;
+-(void)setDouble:(double)v;
+-(void)setBool:(bool)v;
+-(void)setString:(NSString*)v;
 
 @end
 
-@interface BPXTable : NSObject
-
-@property(readonly) bpx_table_t* rawHandle;
-@property(readonly) BPXSection* section;
-@property(readonly) BPXSection* strings;
-
-@property(readonly) NSString* name;
-@property(readonly) size_t rowSize;
-@property(readonly) size_t actualRowSize;
-
--(instancetype)initFromSection:(BPXSection*)parent strings:(BPXSection*)strings rawHandle:(bpx_table_t*)table;
-
--(NSInteger)addColumn:(NSString*)name type:(BPXValueType)type len:(uint16_t)len error:(NSError**)error;
-
--removeColumn:(NSInteger)index;
-
--(NSInteger)rowCount:(NSError**)error;
-
--(NSInteger)columnIndex:(NSString*)name error:(NSError**)error;
-
--(BPXRow*)getRow;
-
--(nullable BPXRow*)read:(NSInteger)index error:(NSError**)error;
-
--(bool)write:(BPXRow*)row index:(NSInteger)index error:(NSError**)error;
-
--(NSInteger)append:(BPXRow*)row error:(NSError**)error;
-
-@end
 
 NS_ASSUME_NONNULL_END
+

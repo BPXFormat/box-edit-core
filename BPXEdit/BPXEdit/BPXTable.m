@@ -38,6 +38,7 @@
 -(instancetype)init {
     _row = NULL;
     _values = [[NSMutableArray alloc] init];
+    return self;
 }
 
 -(instancetype)initFromRawHandle:(bpx_table_t*)table {
@@ -53,7 +54,7 @@
             value = [BPXValue alloc];
             [_values addObject:value];
         }
-        [value initFromRawHandle:bpx_table_row_get_value(_row, i)];
+        (void)[value initFromRawHandle:bpx_table_row_get_value(_row, i)];
     }
     return self;
 }
@@ -62,7 +63,7 @@
     return _row;
 }
 
--setFree:(bool)free {
+-(void)setFree:(bool)free {
     bpx_table_row_set_free(_row, free);
 }
 
@@ -77,7 +78,6 @@
 -(void)dealloc {
     if (_row != NULL)
         bpx_table_row_destroy(_row);
-    [super dealloc];
 }
 
 @end
@@ -89,10 +89,10 @@
     BPXRow* _row;
 }
 
--resetRow {
+-(void)resetRow {
     if (_row == nil)
         _row = [[BPXRow alloc] init];
-    [_row initFromRawHandle:_table];
+    (void)[_row initFromRawHandle:_table];
 }
 
 -(instancetype)initFromSection:(BPXSection*)parent strings:(BPXSection*)strings rawHandle:(bpx_table_t*)table {
@@ -130,7 +130,7 @@
 }
 
 -(NSInteger)addColumn:(NSString*)name type:(BPXValueType)type len:(uint16_t)len error:(NSError**)error {
-    ssize_t index = bpx_table_column_create(_table, name.UTF8String, type, len);
+    ssize_t index = bpx_table_column_create(_table, name.UTF8String, (bpx_value_type_t)type, len);
     if (index == -1) {
         *error = BPXEditGetLastError();
         return -1;
@@ -139,7 +139,7 @@
     return index;
 }
 
--removeColumn:(NSInteger)index {
+-(void)removeColumn:(NSInteger)index {
     bpx_table_column_remove_at(_table, index);
     [self resetRow];
 }
@@ -193,7 +193,6 @@
 
 -(void)dealloc {
     bpx_table_destroy(_table);
-    [super dealloc];
 }
 
 @end

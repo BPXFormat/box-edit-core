@@ -36,22 +36,22 @@
 }
 
 static ssize_t internal__bpx_stream_wrapper_read(void *userdata, bpx_bytes_t buffer) {
-    id<DataStream> ds = (id<DataStream>)userdata;
+    id<DataStream> ds = (__bridge id<DataStream>)userdata;
     return [ds readTo:buffer.bytes withSize:buffer.len];
 }
 
 static ssize_t internal__bpx_stream_wrapper_write(void *userdata, bpx_bytes_const_t buffer) {
-    id<DataStream> ds = (id<DataStream>)userdata;
+    id<DataStream> ds = (__bridge id<DataStream>)userdata;
     return [ds writeFrom:buffer.bytes withSize:buffer.len];
 }
 
 static ssize_t internal__bpx_stream_wrapper_seek(void *userdata, bpx_seek_from_t from, ssize_t pos) {
-    id<DataStream> ds = (id<DataStream>)userdata;
+    id<DataStream> ds = (__bridge id<DataStream>)userdata;
     return [ds seekFrom:from withPos:pos];
 }
 
 static bool internal__bpx_stream_wrapper_flush(void *userdata) {
-    id<DataStream> ds = (id<DataStream>)userdata;
+    id<DataStream> ds = (__bridge id<DataStream>)userdata;
     return [ds flush] == YES;
 }
 
@@ -61,7 +61,7 @@ static bool internal__bpx_stream_wrapper_flush(void *userdata) {
 
 -(instancetype)initFromDataStream:(id<DataStream>)stream {
     _ds = stream;
-    _vtable.userdata = _ds;
+    _vtable.userdata = (__bridge void *)(_ds);
     _vtable.read = &internal__bpx_stream_wrapper_read;
     _vtable.write = &internal__bpx_stream_wrapper_write;
     _vtable.seek = &internal__bpx_stream_wrapper_seek;
@@ -87,7 +87,7 @@ static bool internal__bpx_stream_wrapper_flush(void *userdata) {
 
 -(void)dealloc {
     //TODO: Implement stream destruction
-    [super dealloc];
+    
 }
 
 @end

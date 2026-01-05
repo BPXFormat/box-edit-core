@@ -26,45 +26,6 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#import <Foundation/Foundation.h>
-#include <BPXEditCore/section.h>
-#import <BPXEdit/BPXContainer.h>
+#import <Foundation/NSError.h>
 
-@class BPXTable;
-
-//TODO: Support mutation of section header
-
-typedef NS_OPTIONS(uint8_t, BPXSectionOptions) {
-    BPXSectionOptionsCompressXZ = FLAG_COMPRESS_XZ,
-    BPXSectionOptionsCheckWeak = FLAG_CHECK_WEAK,
-    BPXSectionOptionsCompressZLIB = FLAG_COMPRESS_ZLIB,
-    BPXSectionOptionsCheckCRC32 = FLAG_CHECK_CRC32
-};
-
-NS_ASSUME_NONNULL_BEGIN
-
-typedef bpx_section_header_t BPXSectionHeader;
-
-@interface BPXSection : NSObject
-
-@property(readonly) BPXSectionHeader header;
-@property(readonly) uint32_t index;
-@property(readonly) bpx_section_handle_t rawHandle;
-
--(instancetype)initFromContainer:(BPXContainer*)parent infos:(const bpx_section_info_t*)infos;
-
--(instancetype)initInContainer:(BPXContainer*)parent type:(uint8_t)ty options:(BPXSectionOptions)options compressionThreshold:(uint32_t)value;
-
--(instancetype)initInContainer:(BPXContainer*)parent type:(uint8_t)ty;
-
--remove;
-
--(ssize_t)sizeWithError:(NSError**)error;
-
-+(instancetype)createStrings:(BPXContainer*)parent;
-+(nullable BPXTable*)createTable:(BPXContainer*)parent strings:(BPXSection*)strings name:(const NSString*)name error:(NSError**)error;
--(nullable BPXTable*)openTable:(BPXSection*)strings error:(NSError**)error;
-
-@end
-
-NS_ASSUME_NONNULL_END
+NSError *BPXEditGetLastError(void);

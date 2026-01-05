@@ -42,7 +42,7 @@
 }
 
 -(BPXValueType)type {
-    return bpx_value_get_type(_value);
+    return (BPXValueType)bpx_value_get_type(_value);
 }
 
 -(bool)isNull {
@@ -202,55 +202,55 @@
     return [super initFromRawHandle:value];
 }
 
--setNull {
+-(void)setNull {
     bpx_value_set_null(self.rawHandle);
 }
 
--setInt8:(int8_t)v {
+-(void)setInt8:(int8_t)v {
     bpx_value_set_int8(self.rawHandle, v);
 }
 
--setInt16:(int16_t)v {
+-(void)setInt16:(int16_t)v {
     bpx_value_set_int16(self.rawHandle, v);
 }
 
--setInt32:(int32_t)v {
+-(void)setInt32:(int32_t)v {
     bpx_value_set_int32(self.rawHandle, v);
 }
 
--setInt64:(int64_t)v {
+-(void)setInt64:(int64_t)v {
     bpx_value_set_int64(self.rawHandle, v);
 }
 
--setUint8:(uint8_t)v {
+-(void)setUint8:(uint8_t)v {
     bpx_value_set_uint8(self.rawHandle, v);
 }
 
--setUint16:(uint16_t)v {
+-(void)setUint16:(uint16_t)v {
     bpx_value_set_uint16(self.rawHandle, v);
 }
 
--setUint32:(uint32_t)v {
+-(void)setUint32:(uint32_t)v {
     bpx_value_set_uint32(self.rawHandle, v);
 }
 
--setUint64:(uint64_t)v {
+-(void)setUint64:(uint64_t)v {
     bpx_value_set_uint64(self.rawHandle, v);
 }
 
--setFloat:(float)v {
+-(void)setFloat:(float)v {
     bpx_value_set_float(self.rawHandle, v);
 }
 
--setDouble:(double)v {
+-(void)setDouble:(double)v {
     bpx_value_set_double(self.rawHandle, v);
 }
 
--setBool:(bool)v {
+-(void)setBool:(bool)v {
     bpx_value_set_boolean(self.rawHandle, v);
 }
 
--setString:(NSString*)v {
+-(void)setString:(NSString*)v {
     bpx_value_set_string(self.rawHandle, v.UTF8String);
 }
 

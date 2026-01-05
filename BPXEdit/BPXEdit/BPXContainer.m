@@ -63,7 +63,6 @@
         _handle = NULL;
         _stream = nil;
     }
-    [super dealloc];
 }
 
 -(BOOL)save:(NSError **)error {
@@ -74,13 +73,13 @@
     return YES;
 }
 
--addSection:(BPXSection*)section {
+-(void)addSection:(BPXSection*)section {
     bpx_section_list_t list = bpx_container_get_sections(_handle);
     assert(list.sections[list.len - 1].handle == section.rawHandle);
     [_sections addObject:section];
 }
 
--removeSection:(BPXSection*)section {
+-(void)removeSection:(BPXSection*)section {
     bool flag = false;
     for (BPXSection* sec in _sections) {
         if (sec == section) {

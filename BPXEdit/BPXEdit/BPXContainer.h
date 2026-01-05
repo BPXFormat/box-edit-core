@@ -27,21 +27,59 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Foundation/Foundation.h>
-#include <BPXEditCore/error.h>
-#include <string.h>
+#include <BPXEditCore/container.h>
 
-NSError *BPXEditGetLastError() {
-    int32_t code = bpx_get_last_error_code();
-    const char *name = bpx_get_last_error_name();
-    char buffer[1024];
-    memset(buffer, 0, 1024);
-    //Avoid removing the last null terminator.
-    bpx_get_last_error_message((bpx_bytes_t){ .bytes = (uint8_t *)buffer, .len = 1023 });
-    NSString *msg = [[NSString alloc] initWithCString:buffer encoding:NSUTF8StringEncoding];
-    NSDictionary<NSErrorUserInfoKey, id> *dict = @{
-        NSLocalizedDescriptionKey: msg,
-        NSDebugDescriptionErrorKey: msg
-    };
-    NSString *nameObjc = [[NSString alloc] initWithCString:name encoding: NSUTF8StringEncoding];
-    return [NSError errorWithDomain:nameObjc code:code userInfo:dict];
-}
+typedef NS_OPTIONS(uint8_t, BPXContainerOptions) {
+    BPXContainerOptionsIgnoreChecksum = FLAG_IGNORE_CHECKSUM,
+    BPXContainerOptionsIgnoreSignature = FLAG_IGNORE_SIGNATURE,
+    BPXContainerOptionsIgnoreVersion = FLAG_IGNORE_VERSION,
+    BPXContainerOptionsRevertOnSaveFail = FLAG_REVERT_ON_SAVE_FAIL
+};
+
+typedef bpx_main_header_t BPXMainHeader;
+
+typedef struct BPXOpenOptions {
+    BPXContainerOptions options;
+    uint32_t compressionThreshold;
+    uint32_t memoryThreshold;
+} BPXOpenOptions;
+
+typedef struct BPXCreateOptions {
+    BPXContainerOptions options;
+    uint32_t compressionThreshold;
+    uint32_t memoryThreshold;
+    BPXMainHeader mainHeader;
+} BPXCreateOptions;
+
+@class BPXStream;
+@class BPXSection;
+
+NS_ASSUME_NONNULL_BEGIN
+
+@interface BPXContainer : NSObject
+
+//TODO: Support mutating main header
+
+@property(readonly) BPXMainHeader mainHeader;
+@property(readonly) bpx_container_t* rawHandle;
+@property(readonly) NSArray<BPXSection*>* sections;
+
+-(instancetype)initFromStream:(BPXStream *)stream handle:(bpx_container_t*)handle;
+
+-(BOOL)save:(NSError **)error;
+
+-(void)addSection:(BPXSection*)section;
+
+-(void)removeSection:(BPXSection*)section;
+
++(nullable instancetype)open:(BPXStream*)stream options:(BPXOpenOptions)options error:(NSError**)error;
+
++(nullable instancetype)open:(BPXStream*)stream error:(NSError**)error;
+
++(instancetype)create:(BPXStream*)stream options:(BPXCreateOptions)options;
+
++(instancetype)create:(BPXStream*)stream;
+
+@end
+
+NS_ASSUME_NONNULL_END

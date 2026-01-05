@@ -68,7 +68,7 @@
     return self;
 }
 
--_internal_init_new:(BPXContainer*)parent handle:(bpx_section_handle_t)handle {
+-(void)_internal_init_new:(BPXContainer*)parent handle:(bpx_section_handle_t)handle {
     bpx_section_list_t list = bpx_container_get_sections(parent.rawHandle);
     const bpx_section_info_t* infos = NULL;
     for (size_t i = list.len; i != 0; --i) {
@@ -76,7 +76,7 @@
         if (infos->handle == handle)
             break;
     }
-    [self initFromContainer:parent infos:infos];
+    (void)[self initFromContainer:parent infos:infos];
     [parent addSection:self];
 }
 
@@ -99,7 +99,7 @@
     return self;
 }
 
--remove {
+-(void)remove {
     [_parent removeSection:self];
 }
 
