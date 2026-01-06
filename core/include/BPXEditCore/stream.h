@@ -34,11 +34,12 @@
 typedef void bpx_stream_t;
 
 typedef struct bpx_virtual_stream_s {
-    void* userdata;
-    ssize_t(*read)(void* userdata, bpx_bytes_t buffer);
-    ssize_t(*write)(void* userdata, bpx_bytes_const_t buffer);
-    bool(*flush)(void* userdata);
-    ssize_t(*seek)(void* userdata, bpx_seek_from_t from, ssize_t pos);
+    BPX_NONNULL void* userdata;
+    void(*release)(BPX_NONNULL void* userdata);
+    ssize_t(*read)(BPX_NONNULL void* userdata, bpx_bytes_t buffer);
+    ssize_t(*write)(BPX_NONNULL void* userdata, bpx_bytes_const_t buffer);
+    bool(*flush)(BPX_NONNULL void* userdata);
+    ssize_t(*seek)(BPX_NONNULL void* userdata, bpx_seek_from_t from, ssize_t pos);
 } bpx_virtual_stream_t;
 
 BPX_NULLABLE BPX_API bpx_stream_t* bpx_stream_create(const char *path);
