@@ -32,7 +32,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface NSDataStream<DataStream> : NSObject
+@interface NSDataStream : NSObject <DataStream>
 
 -(instancetype)init:(NSData *)data;
 

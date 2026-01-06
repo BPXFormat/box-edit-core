@@ -26,3 +26,10 @@
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#import <BPXEdit/BPXContainer.h>
+#import <BPXEdit/BPXSection.h>
+#import <BPXEdit/BPXStream.h>
+#import <BPXEdit/BPXTable.h>
+#import <BPXEdit/BPXValue.h>
+#import <BPXEdit/DataStream.h>
+#import <BPXEdit/NSDataStream.h>

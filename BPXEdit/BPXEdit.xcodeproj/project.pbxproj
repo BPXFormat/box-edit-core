@@ -46,7 +46,14 @@
 		DAA4F4F52F0C6EC900C26F03 /* Exceptions for "BPXEdit" folder in "BPXEdit" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			publicHeaders = (
+				BPXContainer.h,
 				BPXEdit.h,
+				BPXSection.h,
+				BPXStream.h,
+				BPXTable.h,
+				BPXValue.h,
+				DataStream.h,
+				NSDataStream.h,
 			);
 			target = DAA4F4E22F0C6EC900C26F03 /* BPXEdit */;
 		};
@@ -189,6 +196,7 @@
 					};
 					DAA4F4ED2F0C6EC900C26F03 = {
 						CreatedOnToolsVersion = 26.2;
+						LastSwiftMigration = 2620;
 					};
 				};
 			};
@@ -445,6 +453,7 @@
 		DAA4F4FC2F0C6EC900C26F03 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -453,12 +462,15 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
 			};
 			name = Debug;
 		};
 		DAA4F4FD2F0C6EC900C26F03 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -467,6 +479,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 6.0;
 			};
 			name = Release;
 		};
