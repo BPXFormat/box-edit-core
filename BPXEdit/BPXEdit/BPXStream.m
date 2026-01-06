@@ -55,13 +55,18 @@ static bool internal__bpx_stream_wrapper_flush(void *userdata) {
     return [ds flush] == YES;
 }
 
+static void internal__bpx_stream_wrapper_release(void* userdata) {
+    CFBridgingRelease(userdata);
+}
+
 -(bpx_stream_t*)rawHandle {
     return _handle;
 }
 
 -(instancetype)initFromDataStream:(id<DataStream>)stream {
     _ds = stream;
-    _vtable.userdata = (__bridge void *)(_ds);
+    _vtable.userdata = (void*)CFBridgingRetain(_ds);
+    _vtable.release = &internal__bpx_stream_wrapper_release;
     _vtable.read = &internal__bpx_stream_wrapper_read;
     _vtable.write = &internal__bpx_stream_wrapper_write;
     _vtable.seek = &internal__bpx_stream_wrapper_seek;
