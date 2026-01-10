@@ -37,6 +37,10 @@
     NSMutableArray<BPXSection*>* _sections;
 }
 
+-(BPXMainHeader)mainHeader {
+    return *bpx_container_get_main_header(_handle);
+}
+
 -(bpx_container_t*)rawHandle {
     return _handle;
 }
