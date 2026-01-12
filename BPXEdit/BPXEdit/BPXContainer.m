@@ -30,6 +30,8 @@
 #import "BPXEdit/Util.h"
 #import "BPXEdit/BPXStream.h"
 #import "BPXEdit/BPXSection.h"
+#import "BPXEdit/BPXTable.h"
+#include <BPXEditCore/strings.h>
 
 @implementation BPXContainer {
     BPXStream* _stream;
@@ -78,6 +80,13 @@
 }
 
 -(void)addSection:(BPXSection*)section {
+    bool section_exists = false;
+    for (BPXSection* sec in _sections) {
+        if (sec.rawHandle == section.rawHandle) {
+            section_exists = true;
+        }
+    }
+    assert(!section_exists);
     bpx_section_list_t list = bpx_container_get_sections(_handle);
     assert(list.sections[list.len - 1].handle == section.rawHandle);
     [_sections addObject:section];
@@ -96,55 +105,36 @@
     [_sections removeObject:section];
 }
 
-+(nullable instancetype)open:(BPXStream*)stream options:(BPXOpenOptions)options error:(NSError**)error {
-    if (stream.rawHandle == NULL)
-        [NSException raise:NSObjectNotAvailableException format:@"Attempt to open a container from a dangling stream!"];
-    bpx_open_options_t opts = {
-            .memory_threshold = options.memoryThreshold,
-            .compression_threshold = options.compressionThreshold,
-            .flags = options.options
-    };
-    bpx_container_t* container = bpx_container_open(stream.rawHandle, &opts);
-    if (container == NULL) {
+-(BPXSection*)createSectionWithType:(uint8_t)ty options:(BPXSectionOptions)options compressionThreshold:(uint32_t)value {
+    bpx_section_options_t opts;
+    opts.compression_threshold = value;
+    opts.flags = options;
+    opts.type = ty;
+    bpx_section_handle_t handle = bpx_section_create(_handle, &opts);
+    return [[BPXSection alloc] initFromContainer:self handle:handle];
+}
+
+-(BPXSection*)createSectionWithType:(uint8_t)ty {
+    bpx_section_options_t opts;
+    bpx_section_options_default(&opts);
+    opts.type = ty;
+    bpx_section_handle_t handle = bpx_section_create(_handle, &opts);
+    return [[BPXSection alloc] initFromContainer:self handle:handle];
+}
+
+-(BPXSection*)createStrings {
+    bpx_section_handle_t handle = bpx_strings_create(_handle);
+    return [[BPXSection alloc] initFromContainer:self handle:handle];
+}
+
+-(nullable BPXTable*)createTable:(BPXSection*)strings name:(const NSString*)name error:(NSError**)error {
+    bpx_table_t* table = bpx_table_create(_handle, strings.rawHandle, name.UTF8String);
+    if (table == NULL) {
         *error = BPXEditGetLastError();
         return nil;
     }
-    return [[BPXContainer alloc] initFromStream:stream handle:container];
-}
-
-+(nullable instancetype)open:(BPXStream*)stream error:(NSError**)error {
-    if (stream.rawHandle == NULL)
-        [NSException raise:NSObjectNotAvailableException format:@"Attempt to open a container from a dangling stream!"];
-    bpx_open_options_t opts;
-    bpx_open_options_default(&opts);
-    bpx_container_t* container = bpx_container_open(stream.rawHandle, &opts);
-    if (container == NULL) {
-        *error = BPXEditGetLastError();
-        return nil;
-    }
-    return [[BPXContainer alloc] initFromStream:stream handle:container];
-}
-
-+(instancetype)create:(BPXStream*)stream options:(BPXCreateOptions)options {
-    if (stream.rawHandle == NULL)
-        [NSException raise:NSObjectNotAvailableException format:@"Attempt to create a container from a dangling stream!"];
-    bpx_create_options_t opts = {
-            .flags = options.options,
-            .memory_threshold = options.memoryThreshold,
-            .compression_threshold = options.compressionThreshold,
-            .main_header = options.mainHeader
-    };
-    bpx_container_t* container = bpx_container_create(stream.rawHandle, &opts);
-    return [[BPXContainer alloc] initFromStream:stream handle:container];
-}
-
-+(instancetype)create:(BPXStream*)stream {
-    if (stream.rawHandle == NULL)
-        [NSException raise:NSObjectNotAvailableException format:@"Attempt to create a container from a dangling stream!"];
-    bpx_create_options_t opts;
-    bpx_create_options_default(&opts);
-    bpx_container_t* container = bpx_container_create(stream.rawHandle, &opts);
-    return [[BPXContainer alloc] initFromStream:stream handle:container];
+    BPXSection* section = [[BPXSection alloc] initFromContainer:self handle:bpx_table_handle(table)];
+    return [[BPXTable alloc] initFromSection:section strings:strings handle:table];
 }
 
 @end

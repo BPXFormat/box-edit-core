@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(readonly) size_t rowSize;
 @property(readonly) size_t actualRowSize;
 
--(instancetype)initFromSection:(BPXSection*)parent strings:(BPXSection*)strings rawHandle:(bpx_table_t*)table;
+-(instancetype)initFromSection:(BPXSection*)parent strings:(BPXSection*)strings handle:(bpx_table_t*)table;
 
 -(NSInteger)addColumn:(NSString*)name type:(BPXValueType)type len:(uint16_t)len error:(NSError**)error;
 

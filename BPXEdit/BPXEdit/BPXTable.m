@@ -95,7 +95,7 @@
     (void)[_row initFromRawHandle:_table];
 }
 
--(instancetype)initFromSection:(BPXSection*)parent strings:(BPXSection*)strings rawHandle:(bpx_table_t*)table {
+-(instancetype)initFromSection:(BPXSection*)parent strings:(BPXSection*)strings handle:(bpx_table_t*)table {
     _table = table;
     _parent = parent;
     _strings = strings;

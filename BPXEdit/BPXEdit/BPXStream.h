@@ -40,6 +40,14 @@ NS_ASSUME_NONNULL_BEGIN
 -(instancetype)initFromDataStream:(id<DataStream>)stream;
 -(nullable instancetype)initFromFile:(NSString *)path create:(BOOL)create withError:(NSError **)error;
 
+-(nullable BPXContainer*)openWithOptions:(BPXContainerOptions)options compressionThreshold:(uint32_t)compressionThreshold memoryThreshold:(uint32_t)memoryThreshold error:(NSError**)error;
+
+-(nullable BPXContainer*)open:(NSError**)error;
+
+-(BPXContainer*)createWithOptions:(BPXContainerOptions)options compressionThreshold:(uint32_t)compressionThreshold memoryThreshold:(uint32_t)memoryThreshold mainHeader:(BPXMainHeader)mainHeader;
+
+-(BPXContainer*)create;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -34,13 +34,6 @@
 
 //TODO: Support mutation of section header
 
-typedef NS_OPTIONS(uint8_t, BPXSectionOptions) {
-    BPXSectionOptionsCompressXZ = FLAG_COMPRESS_XZ,
-    BPXSectionOptionsCheckWeak = FLAG_CHECK_WEAK,
-    BPXSectionOptionsCompressZLIB = FLAG_COMPRESS_ZLIB,
-    BPXSectionOptionsCheckCRC32 = FLAG_CHECK_CRC32
-};
-
 NS_ASSUME_NONNULL_BEGIN
 
 typedef bpx_section_header_t BPXSectionHeader;
@@ -53,16 +46,12 @@ typedef bpx_section_header_t BPXSectionHeader;
 
 -(instancetype)initFromContainer:(BPXContainer*)parent infos:(const bpx_section_info_t*)infos;
 
--(instancetype)initInContainer:(BPXContainer*)parent type:(uint8_t)ty options:(BPXSectionOptions)options compressionThreshold:(uint32_t)value;
-
--(instancetype)initInContainer:(BPXContainer*)parent type:(uint8_t)ty;
+-(instancetype)initFromContainer:(BPXContainer*)parent handle:(bpx_section_handle_t)handle;
 
 -(void)remove;
 
 -(ssize_t)sizeWithError:(NSError**)error;
 
-+(instancetype)createStrings:(BPXContainer*)parent;
-+(nullable BPXTable*)createTable:(BPXContainer*)parent strings:(BPXSection*)strings name:(const NSString*)name error:(NSError**)error;
 -(nullable BPXTable*)openTable:(BPXSection*)strings error:(NSError**)error;
 
 @end

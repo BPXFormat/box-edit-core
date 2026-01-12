@@ -28,6 +28,7 @@
 
 #import <Foundation/Foundation.h>
 #include <BPXEditCore/container.h>
+#include <BPXEditCore/section.h>
 
 typedef NS_OPTIONS(uint8_t, BPXContainerOptions) {
     BPXContainerOptionsIgnoreChecksum = FLAG_IGNORE_CHECKSUM,
@@ -36,23 +37,18 @@ typedef NS_OPTIONS(uint8_t, BPXContainerOptions) {
     BPXContainerOptionsRevertOnSaveFail = FLAG_REVERT_ON_SAVE_FAIL
 };
 
+typedef NS_OPTIONS(uint8_t, BPXSectionOptions) {
+    BPXSectionOptionsCompressXZ = FLAG_COMPRESS_XZ,
+    BPXSectionOptionsCheckWeak = FLAG_CHECK_WEAK,
+    BPXSectionOptionsCompressZLIB = FLAG_COMPRESS_ZLIB,
+    BPXSectionOptionsCheckCRC32 = FLAG_CHECK_CRC32
+};
+
 typedef bpx_main_header_t BPXMainHeader;
-
-typedef struct BPXOpenOptions {
-    BPXContainerOptions options;
-    uint32_t compressionThreshold;
-    uint32_t memoryThreshold;
-} BPXOpenOptions;
-
-typedef struct BPXCreateOptions {
-    BPXContainerOptions options;
-    uint32_t compressionThreshold;
-    uint32_t memoryThreshold;
-    BPXMainHeader mainHeader;
-} BPXCreateOptions;
 
 @class BPXStream;
 @class BPXSection;
+@class BPXTable;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -72,13 +68,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 -(void)removeSection:(BPXSection*)section;
 
-+(nullable instancetype)open:(BPXStream*)stream options:(BPXOpenOptions)options error:(NSError**)error;
+-(BPXSection*)createSectionWithType:(uint8_t)ty options:(BPXSectionOptions)options compressionThreshold:(uint32_t)value;
 
-+(nullable instancetype)open:(BPXStream*)stream error:(NSError**)error;
+-(BPXSection*)createSectionWithType:(uint8_t)ty;
 
-+(instancetype)create:(BPXStream*)stream options:(BPXCreateOptions)options;
+-(BPXSection*)createStrings;
 
-+(instancetype)create:(BPXStream*)stream;
+-(nullable BPXTable*)createTable:(BPXSection*)strings name:(const NSString*)name error:(NSError**)error;
 
 @end
 

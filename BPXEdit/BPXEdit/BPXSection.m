@@ -68,7 +68,7 @@
     return self;
 }
 
--(void)_internal_init_new:(BPXContainer*)parent handle:(bpx_section_handle_t)handle {
+-(instancetype)initFromContainer:(BPXContainer*)parent handle:(bpx_section_handle_t)handle {
     bpx_section_list_t list = bpx_container_get_sections(parent.rawHandle);
     const bpx_section_info_t* infos = NULL;
     for (size_t i = list.len; i != 0; --i) {
@@ -76,49 +76,14 @@
         if (infos->handle == handle)
             break;
     }
+    assert(infos != NULL);
     (void)[self initFromContainer:parent infos:infos];
     [parent addSection:self];
-}
-
--(instancetype)initInContainer:(BPXContainer*)parent type:(uint8_t)ty options:(BPXSectionOptions)options compressionThreshold:(uint32_t)value {
-    bpx_section_options_t opts;
-    opts.compression_threshold = value;
-    opts.flags = options;
-    opts.type = ty;
-    bpx_section_handle_t handle = bpx_section_create(parent.rawHandle, &opts);
-    [self _internal_init_new:parent handle:handle];
-    return self;
-}
-
--(instancetype)initInContainer:(BPXContainer*)parent type:(uint8_t)ty {
-    bpx_section_options_t opts;
-    bpx_section_options_default(&opts);
-    opts.type = ty;
-    bpx_section_handle_t handle = bpx_section_create(parent.rawHandle, &opts);
-    [self _internal_init_new:parent handle:handle];
     return self;
 }
 
 -(void)remove {
     [_parent removeSection:self];
-}
-
-+(instancetype)createStrings:(BPXContainer*)parent {
-    bpx_section_handle_t handle = bpx_strings_create(parent.rawHandle);
-    BPXSection* section = [[BPXSection alloc] init];
-    [section _internal_init_new:parent handle:handle];
-    return section;
-}
-
-+(nullable BPXTable*)createTable:(BPXContainer*)parent strings:(BPXSection*)strings name:(const NSString*)name error:(NSError**)error {
-    bpx_table_t* table = bpx_table_create(parent.rawHandle, strings.rawHandle, name.UTF8String);
-    if (table == NULL) {
-        *error = BPXEditGetLastError();
-        return nil;
-    }
-    BPXSection* section = [[BPXSection alloc] init];
-    [section _internal_init_new:parent handle:bpx_table_handle(table)];
-    return [[BPXTable alloc] initFromSection:section strings:strings rawHandle:table];
 }
 
 -(nullable BPXTable*)openTable:(BPXSection*)strings error:(NSError**)error {
@@ -127,7 +92,7 @@
         *error = BPXEditGetLastError();
         return nil;
     }
-    return [[BPXTable alloc] initFromSection:self strings:strings rawHandle:table];
+    return [[BPXTable alloc] initFromSection:self strings:strings handle:table];
 }
 
 @end

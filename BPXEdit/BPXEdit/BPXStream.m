@@ -95,4 +95,55 @@ static void internal__bpx_stream_wrapper_release(void* userdata) {
     
 }
 
+-(nullable BPXContainer*)openWithOptions:(BPXContainerOptions)options compressionThreshold:(uint32_t)compressionThreshold memoryThreshold:(uint32_t)memoryThreshold error:(NSError**)error {
+    if (_handle == NULL)
+        [NSException raise:NSObjectNotAvailableException format:@"Attempt to open a container from a dangling stream!"];
+    bpx_open_options_t opts = {
+            .memory_threshold = memoryThreshold,
+            .compression_threshold = compressionThreshold,
+            .flags = options
+    };
+    bpx_container_t* container = bpx_container_open(_handle, &opts);
+    if (container == NULL) {
+        *error = BPXEditGetLastError();
+        return nil;
+    }
+    return [[BPXContainer alloc] initFromStream:self handle:container];
+}
+
+-(nullable BPXContainer*)open:(NSError**)error {
+    if (_handle == NULL)
+        [NSException raise:NSObjectNotAvailableException format:@"Attempt to open a container from a dangling stream!"];
+    bpx_open_options_t opts;
+    bpx_open_options_default(&opts);
+    bpx_container_t* container = bpx_container_open(_handle, &opts);
+    if (container == NULL) {
+        *error = BPXEditGetLastError();
+        return nil;
+    }
+    return [[BPXContainer alloc] initFromStream:self handle:container];
+}
+
+-(BPXContainer*)createWithOptions:(BPXContainerOptions)options compressionThreshold:(uint32_t)compressionThreshold memoryThreshold:(uint32_t)memoryThreshold mainHeader:(BPXMainHeader)mainHeader {
+    if (_handle == NULL)
+        [NSException raise:NSObjectNotAvailableException format:@"Attempt to create a container from a dangling stream!"];
+    bpx_create_options_t opts = {
+            .flags = options,
+            .memory_threshold = memoryThreshold,
+            .compression_threshold = compressionThreshold,
+            .main_header = mainHeader
+    };
+    bpx_container_t* container = bpx_container_create(_handle, &opts);
+    return [[BPXContainer alloc] initFromStream:self handle:container];
+}
+
+-(BPXContainer*)create {
+    if (_handle == NULL)
+        [NSException raise:NSObjectNotAvailableException format:@"Attempt to create a container from a dangling stream!"];
+    bpx_create_options_t opts;
+    bpx_create_options_default(&opts);
+    bpx_container_t* container = bpx_container_create(_handle, &opts);
+    return [[BPXContainer alloc] initFromStream:self handle:container];
+}
+
 @end
