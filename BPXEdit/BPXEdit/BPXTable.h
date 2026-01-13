@@ -33,15 +33,26 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface BPXColumn : NSObject
+
+@property(readonly) NSInteger index;
+
+@property(readonly) NSString* name;
+
+@property(readonly) BPXValueType type;
+
+@end
+
 @interface BPXRow : NSObject
 
+@property(readonly) NSInteger index;
 @property(readonly) bpx_table_row_t* rawHandle;
 
 -(void)setFree:(bool)free;
 
 -(bool)isFree;
 
--(BPXValue*)objectAtIndexedSubscript:(NSInteger)index;
+-(BPXValue*)objectAtIndexedSubscript:(BPXColumn*)column;
 
 @end
 
@@ -52,26 +63,26 @@ NS_ASSUME_NONNULL_BEGIN
 @property(readonly) BPXSection* strings;
 
 @property(readonly) NSString* name;
-@property(readonly) size_t rowSize;
-@property(readonly) size_t actualRowSize;
+@property(readonly) NSUInteger rowSize;
+@property(readonly) NSUInteger actualRowSize;
 
 -(instancetype)initFromSection:(BPXSection*)parent strings:(BPXSection*)strings handle:(bpx_table_t*)table;
 
--(NSInteger)addColumn:(NSString*)name type:(BPXValueType)type len:(uint16_t)len error:(NSError**)error;
+-(nullable BPXColumn*)addColumn:(NSString*)name type:(BPXValueType)type len:(uint16_t)len error:(NSError**)error;
 
--(void)removeColumn:(NSInteger)index;
+-(void)removeColumn:(BPXColumn*)column;
 
--(NSInteger)rowCount:(NSError**)error;
+-(nullable NSNumber*)rowCountWithError:(NSError**)error;
 
--(NSInteger)columnIndex:(NSString*)name error:(NSError**)error;
+-(nullable BPXColumn*)columnForName:(NSString*)name error:(NSError**)error;
 
--(BPXRow*)getRow;
+-(BPXRow*)newRow;
 
 -(nullable BPXRow*)read:(NSInteger)index error:(NSError**)error;
 
 -(bool)write:(BPXRow*)row index:(NSInteger)index error:(NSError**)error;
 
--(NSInteger)append:(BPXRow*)row error:(NSError**)error;
+-(nullable BPXRow*)append:(BPXRow*)row error:(NSError**)error;
 
 @end
 
