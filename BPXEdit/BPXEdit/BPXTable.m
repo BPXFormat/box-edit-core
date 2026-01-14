@@ -110,12 +110,16 @@
     (void)[_row initFromRawHandle:_table];
 }
 
--(instancetype)initFromSection:(BPXSection*)parent strings:(BPXSection*)strings handle:(bpx_table_t*)table {
+-(nullable instancetype)initFromSection:(BPXSection*)parent strings:(BPXSection*)strings handle:(bpx_table_t*)table error:(NSError**)error {
     _table = table;
     _parent = parent;
     _strings = strings;
+    _rowCount = 0;
     _row = nil;
     [self resetRow];
+    _rowCount = bpx_table_get_row_count(_table, _row.rawHandle);
+    if (![self updateRowCount:error])
+        return nil;
     return self;
 }
 
@@ -159,13 +163,13 @@
     [self resetRow];
 }
 
--(nullable NSNumber*)rowCountWithError:(NSError**)error {
-    ssize_t len = bpx_table_get_row_count(_table, _row.rawHandle);
-    if (len == -1) {
+-(bool)updateRowCount:(NSError**)error {
+    _rowCount = bpx_table_get_row_count(_table, _row.rawHandle);
+    if (_rowCount == -1) {
         *error = BPXEditGetLastError();
-        return nil;
+        return false;
     }
-    return [NSNumber numberWithInteger:len];
+    return true;
 }
 
 -(nullable BPXColumn*)columnForName:(NSString*)name error:(NSError**)error {
@@ -196,7 +200,7 @@
         *error = BPXEditGetLastError();
         return false;
     }
-    return true;
+    return [self updateRowCount:error];
 }
 
 -(nullable BPXRow*)append:(BPXRow*)row error:(NSError**)error {
@@ -206,6 +210,8 @@
         return nil;
     }
     [row __setIndex:index];
+    if (![self updateRowCount:error])
+        return nil;
     return row;
 }
 

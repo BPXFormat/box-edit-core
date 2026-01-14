@@ -65,14 +65,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property(readonly) NSString* name;
 @property(readonly) NSUInteger rowSize;
 @property(readonly) NSUInteger actualRowSize;
+@property(readonly) NSInteger rowCount;
 
--(instancetype)initFromSection:(BPXSection*)parent strings:(BPXSection*)strings handle:(bpx_table_t*)table;
+-(nullable instancetype)initFromSection:(BPXSection*)parent strings:(BPXSection*)strings handle:(bpx_table_t*)table error:(NSError**)error;
 
 -(nullable BPXColumn*)addColumn:(NSString*)name type:(BPXValueType)type len:(uint16_t)len error:(NSError**)error;
 
 -(void)removeColumn:(BPXColumn*)column;
-
--(nullable NSNumber*)rowCountWithError:(NSError**)error;
 
 -(nullable BPXColumn*)columnForName:(NSString*)name error:(NSError**)error;
 
