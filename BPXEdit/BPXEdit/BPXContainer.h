@@ -60,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(readonly) bpx_container_t* rawHandle;
 @property(readonly) NSArray<BPXSection*>* sections;
 
--(instancetype)initFromStream:(BPXStream *)stream handle:(bpx_container_t*)handle;
+-(nullable instancetype)initFromStream:(BPXStream *)stream handle:(bpx_container_t*)handle error:(NSError**)error;
 
 -(BOOL)save:(NSError **)error;
 

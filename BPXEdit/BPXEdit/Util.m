@@ -30,7 +30,7 @@
 #include <BPXEditCore/error.h>
 #include <string.h>
 
-NSError *BPXEditGetLastError(void) {
+NSError* BPXEditGetLastError(void) {
     int32_t code = bpx_get_last_error_code();
     const char *name = bpx_get_last_error_name();
     char buffer[1024];

@@ -36,6 +36,7 @@
     BPXSectionHeader _header;
     uint32_t _index;
     BPXContainer* _parent;
+    NSMutableData* _data;
 }
 
 -(BPXSectionHeader)header {
@@ -46,29 +47,40 @@
     return _index;
 }
 
--(ssize_t)sizeWithError:(NSError**)error {
-    ssize_t res = bpx_section_size(_parent.rawHandle, _handle);
-    if (res == -1) {
-        *error = BPXEditGetLastError();
-        return -1;
-    }
-    return res;
-}
-
 -(bpx_section_handle_t)rawHandle {
     return _handle;
 }
 
--(instancetype)initFromContainer:(BPXContainer*)parent infos:(const bpx_section_info_t*)infos {
+-(bool)updateSize:(NSError**)error {
+    // This is only used when creating sections, when the size will obviously be 0.
+    if (error == nil) {
+        _size = 0;
+        return true;
+    }
+    _size = bpx_section_size(_parent.rawHandle, _handle);
+    if (_size == -1) {
+        *error = BPXEditGetLastError();
+        return false;
+    }
+    return true;
+}
+
+-(nullable instancetype)initFromContainer:(BPXContainer*)parent infos:(const bpx_section_info_t*)infos error:(NSError**)error {
     assert(infos != NULL);
     _parent = parent;
     _handle = infos->handle;
     _index = infos->index;
     _header = infos->header;
+    _data = nil;
+    _pos = 0;
+    _bytesWritten = 0;
+    _size = 0;
+    if (![self updateSize:error])
+        return nil;
     return self;
 }
 
--(instancetype)initFromContainer:(BPXContainer*)parent handle:(bpx_section_handle_t)handle {
+-(nullable instancetype)initFromContainer:(BPXContainer*)parent handle:(bpx_section_handle_t)handle error:(NSError**)error {
     bpx_section_list_t list = bpx_container_get_sections(parent.rawHandle);
     const bpx_section_info_t* infos = NULL;
     for (size_t i = list.len; i != 0; --i) {
@@ -77,7 +89,8 @@
             break;
     }
     assert(infos != NULL);
-    (void)[self initFromContainer:parent infos:infos];
+    if ([self initFromContainer:parent infos:infos error:error] == nil)
+        return nil;
     [parent addSection:self];
     return self;
 }
@@ -92,7 +105,53 @@
         *error = BPXEditGetLastError();
         return nil;
     }
-    return [[BPXTable alloc] initFromSection:self strings:strings handle:table];
+    return [[BPXTable alloc] initFromSection:self strings:strings handle:table error:error];
+}
+
+-(nullable NSData*)read:(NSInteger)size error:(NSError**)error {
+    [_data setLength:size];
+    bpx_bytes_t bytes = {
+        .bytes = _data.mutableBytes,
+        .len = _data.length
+    };
+    NSInteger res = bpx_section_read(_parent.rawHandle, _handle, bytes);
+    if (res < 0) {
+        *error = BPXEditGetLastError();
+        return nil;
+    }
+    [_data setLength:res];
+    _pos += res;
+    return _data;
+}
+
+-(BOOL)write:(NSData*)data error:(NSError**)error {
+    bpx_bytes_const_t bytes = {
+        .bytes = data.bytes,
+        .len = data.length
+    };
+    NSInteger res = bpx_section_write(_parent.rawHandle, _handle, bytes);
+    if (res < 0) {
+        *error = BPXEditGetLastError();
+        return NO;
+    }
+    if (![self updateSize:error])
+        return NO;
+    _bytesWritten += res;
+    _pos += res;
+    return YES;
+}
+
+-(BOOL)seek:(BPXSeekFrom)from pos:(NSInteger)pos error:(NSError**)error {
+    NSInteger res = bpx_section_seek(_parent.rawHandle, _handle, (bpx_seek_from_t)from, pos);
+    if (res < 0) {
+        *error = BPXEditGetLastError();
+        return NO;
+    }
+    if (![self updateSize:error])
+        return NO;
+    _pos = res;
+    _bytesWritten = 0;
+    return YES;
 }
 
 @end

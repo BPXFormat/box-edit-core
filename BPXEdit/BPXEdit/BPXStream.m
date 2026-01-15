@@ -108,7 +108,7 @@ static void internal__bpx_stream_wrapper_release(void* userdata) {
         *error = BPXEditGetLastError();
         return nil;
     }
-    return [[BPXContainer alloc] initFromStream:self handle:container];
+    return [[BPXContainer alloc] initFromStream:self handle:container error:error];
 }
 
 -(nullable BPXContainer*)open:(NSError**)error {
@@ -121,7 +121,7 @@ static void internal__bpx_stream_wrapper_release(void* userdata) {
         *error = BPXEditGetLastError();
         return nil;
     }
-    return [[BPXContainer alloc] initFromStream:self handle:container];
+    return [[BPXContainer alloc] initFromStream:self handle:container error:error];
 }
 
 -(BPXContainer*)createWithOptions:(BPXContainerOptions)options compressionThreshold:(uint32_t)compressionThreshold memoryThreshold:(uint32_t)memoryThreshold mainHeader:(BPXMainHeader)mainHeader {
@@ -134,7 +134,7 @@ static void internal__bpx_stream_wrapper_release(void* userdata) {
             .main_header = mainHeader
     };
     bpx_container_t* container = bpx_container_create(_handle, &opts);
-    return [[BPXContainer alloc] initFromStream:self handle:container];
+    return [[BPXContainer alloc] initFromStream:self handle:container error:nil];
 }
 
 -(BPXContainer*)create {
@@ -143,7 +143,7 @@ static void internal__bpx_stream_wrapper_release(void* userdata) {
     bpx_create_options_t opts;
     bpx_create_options_default(&opts);
     bpx_container_t* container = bpx_container_create(_handle, &opts);
-    return [[BPXContainer alloc] initFromStream:self handle:container];
+    return [[BPXContainer alloc] initFromStream:self handle:container error:nil];
 }
 
 @end

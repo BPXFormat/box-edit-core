@@ -51,13 +51,13 @@
     return _sections;
 }
 
--(instancetype)initFromStream:(BPXStream *)stream handle:(bpx_container_t*)handle {
+-(instancetype)initFromStream:(BPXStream *)stream handle:(bpx_container_t*)handle error:(NSError**)error {
     _handle = handle;
     _stream = stream;
     _sections = [[NSMutableArray alloc] init];
     bpx_section_list_t list = bpx_container_get_sections(_handle);
     for (size_t i = 0; i != list.len; ++i) {
-        BPXSection* obj = [[BPXSection alloc] initFromContainer:self infos:&list.sections[i]];
+        BPXSection* obj = [[BPXSection alloc] initFromContainer:self infos:&list.sections[i] error:error];
         [_sections addObject:obj];
     }
     return self;
@@ -111,7 +111,7 @@
     opts.flags = options;
     opts.type = ty;
     bpx_section_handle_t handle = bpx_section_create(_handle, &opts);
-    return [[BPXSection alloc] initFromContainer:self handle:handle];
+    return [[BPXSection alloc] initFromContainer:self handle:handle error:nil];
 }
 
 -(BPXSection*)createSectionWithType:(uint8_t)ty {
@@ -119,12 +119,12 @@
     bpx_section_options_default(&opts);
     opts.type = ty;
     bpx_section_handle_t handle = bpx_section_create(_handle, &opts);
-    return [[BPXSection alloc] initFromContainer:self handle:handle];
+    return [[BPXSection alloc] initFromContainer:self handle:handle error:nil];
 }
 
 -(BPXSection*)createStrings {
     bpx_section_handle_t handle = bpx_strings_create(_handle);
-    return [[BPXSection alloc] initFromContainer:self handle:handle];
+    return [[BPXSection alloc] initFromContainer:self handle:handle error:nil];
 }
 
 -(nullable BPXTable*)createTable:(BPXSection*)strings name:(const NSString*)name error:(NSError**)error {
@@ -133,8 +133,10 @@
         *error = BPXEditGetLastError();
         return nil;
     }
-    BPXSection* section = [[BPXSection alloc] initFromContainer:self handle:bpx_table_handle(table)];
-    return [[BPXTable alloc] initFromSection:section strings:strings handle:table];
+    BPXSection* section = [[BPXSection alloc] initFromContainer:self handle:bpx_table_handle(table) error:error];
+    if (section == nil)
+        return nil;
+    return [[BPXTable alloc] initFromSection:section strings:strings handle:table error:error];
 }
 
 @end

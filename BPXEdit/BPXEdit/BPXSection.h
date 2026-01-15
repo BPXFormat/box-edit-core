@@ -34,6 +34,12 @@
 
 //TODO: Support mutation of section header
 
+typedef NS_ENUM(int32_t, BPXSeekFrom) {
+    BPXSeekFromStart = BPX_SEEK_FROM_START,
+    BPXSeekFromCurrent = BPX_SEEK_FROM_CURRENT,
+    BPXSeekFromEnd = BPX_SEEK_FROM_END
+};
+
 NS_ASSUME_NONNULL_BEGIN
 
 typedef bpx_section_header_t BPXSectionHeader;
@@ -43,16 +49,23 @@ typedef bpx_section_header_t BPXSectionHeader;
 @property(readonly) BPXSectionHeader header;
 @property(readonly) uint32_t index;
 @property(readonly) bpx_section_handle_t rawHandle;
+@property(readonly) NSInteger size;
+@property(readonly) NSInteger bytesWritten;
+@property(readonly) NSInteger pos;
 
--(instancetype)initFromContainer:(BPXContainer*)parent infos:(const bpx_section_info_t*)infos;
+-(nullable instancetype)initFromContainer:(BPXContainer*)parent infos:(const bpx_section_info_t*)infos error:(NSError**)error;
 
--(instancetype)initFromContainer:(BPXContainer*)parent handle:(bpx_section_handle_t)handle;
+-(nullable instancetype)initFromContainer:(BPXContainer*)parent handle:(bpx_section_handle_t)handle error:(NSError**)error;
 
 -(void)remove;
 
--(ssize_t)sizeWithError:(NSError**)error;
-
 -(nullable BPXTable*)openTable:(BPXSection*)strings error:(NSError**)error;
+
+-(nullable NSData*)read:(NSInteger)size error:(NSError**)error;
+
+-(BOOL)write:(NSData*)data error:(NSError**)error;
+
+-(BOOL)seek:(BPXSeekFrom)from pos:(NSInteger)pos error:(NSError**)error;
 
 @end
 
