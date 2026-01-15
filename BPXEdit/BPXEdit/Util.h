@@ -28,4 +28,6 @@
 
 #import <Foundation/NSError.h>
 
-NSError *BPXEditGetLastError(void);
+NSError* BPXEditGetLastError(void);
+
+NSError* BPXEditUTF8Error(void);

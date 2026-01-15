@@ -45,3 +45,11 @@ NSError* BPXEditGetLastError(void) {
     NSString *nameObjc = [[NSString alloc] initWithCString:name encoding: NSUTF8StringEncoding];
     return [NSError errorWithDomain:nameObjc code:code userInfo:dict];
 }
+
+NSError* BPXEditUTF8Error(void) {
+    NSDictionary<NSErrorUserInfoKey, id> *dict = @{
+        NSLocalizedDescriptionKey: @"invalid utf-8 string",
+        NSDebugDescriptionErrorKey: @"invalid utf-8 string"
+    };
+    return [NSError errorWithDomain:@"BPXEdit" code:128 userInfo:dict];
+}
