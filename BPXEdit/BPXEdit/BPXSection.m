@@ -124,6 +124,20 @@
     return _data;
 }
 
+-(nullable NSData*)readExact:(NSInteger)size error:(NSError**)error {
+    [_data setLength:size];
+    bpx_bytes_t bytes = {
+        .bytes = _data.mutableBytes,
+        .len = _data.length
+    };
+    if (!bpx_section_read_exact(_parent.rawHandle, _handle, bytes)) {
+        *error = BPXEditGetLastError();
+        return nil;
+    }
+    _pos += size;
+    return _data;
+}
+
 -(nullable NSData*)readUntil:(Byte)byte maxSize:(NSInteger)size error:(NSError**)error {
     uint8_t data = 0;
     bpx_bytes_t bytes = {
@@ -163,6 +177,22 @@
         return NO;
     _bytesWritten += res;
     _pos += res;
+    return YES;
+}
+
+-(BOOL)writeAll:(NSData*)data error:(NSError**)error {
+    bpx_bytes_const_t bytes = {
+        .bytes = data.bytes,
+        .len = data.length
+    };
+    if (!bpx_section_write_all(_parent.rawHandle, _handle, bytes)) {
+        *error = BPXEditGetLastError();
+        return NO;
+    }
+    if (![self updateSize:error])
+        return NO;
+    _bytesWritten += data.length;
+    _pos += data.length;
     return YES;
 }
 
