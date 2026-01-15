@@ -124,6 +124,31 @@
     return _data;
 }
 
+-(nullable NSData*)readUntil:(Byte)byte maxSize:(NSInteger)size error:(NSError**)error {
+    uint8_t data = 0;
+    bpx_bytes_t bytes = {
+        .bytes = &data,
+        .len = 1
+    };
+    [_data setLength:0];
+    NSInteger res = bpx_section_read(_parent.rawHandle, _handle, bytes);
+    if (res < 0) {
+        *error = BPXEditGetLastError();
+        return nil;
+    }
+    [_data appendBytes:&data length:1];
+    while (data != byte && size > 0) {
+        NSInteger res = bpx_section_read(_parent.rawHandle, _handle, bytes);
+        if (res < 0) {
+            *error = BPXEditGetLastError();
+            return nil;
+        }
+        [_data appendBytes:&data length:1];
+        --size;
+    }
+    return _data;
+}
+
 -(BOOL)write:(NSData*)data error:(NSError**)error {
     bpx_bytes_const_t bytes = {
         .bytes = data.bytes,

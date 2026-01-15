@@ -67,6 +67,8 @@ typedef bpx_section_header_t BPXSectionHeader;
 
 -(BOOL)seekFrom:(BPXSeekFrom)from pos:(NSInteger)pos error:(NSError**)error;
 
+-(nullable NSData*)readUntil:(Byte)byte maxSize:(NSInteger)size error:(NSError**)error;
+
 @end
 
 NS_ASSUME_NONNULL_END
