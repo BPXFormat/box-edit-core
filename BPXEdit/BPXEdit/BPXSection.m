@@ -209,4 +209,22 @@
     return YES;
 }
 
+-(BOOL)shiftRight:(NSInteger)length error:(NSError**)error {
+    if (!bpx_section_shift_right(_parent.rawHandle, _handle, length)) {
+        *error = BPXEditGetLastError();
+        return NO;
+    }
+    _bytesWritten = 0;
+    return YES;
+}
+
+-(BOOL)shiftLeft:(NSInteger)length error:(NSError**)error {
+    if (!bpx_section_shift_left(_parent.rawHandle, _handle, length)) {
+        *error = BPXEditGetLastError();
+        return NO;
+    }
+    _bytesWritten = 0;
+    return YES;
+}
+
 @end

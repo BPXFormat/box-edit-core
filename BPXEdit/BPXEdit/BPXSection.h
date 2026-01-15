@@ -73,6 +73,10 @@ typedef bpx_section_header_t BPXSectionHeader;
 
 -(BOOL)seekFrom:(BPXSeekFrom)from pos:(NSInteger)pos error:(NSError**)error;
 
+-(BOOL)shiftRight:(NSInteger)length error:(NSError**)error;
+
+-(BOOL)shiftLeft:(NSInteger)length error:(NSError**)error;
+
 @end
 
 NS_ASSUME_NONNULL_END
