@@ -1,4 +1,4 @@
-// Copyright (c) 2025, BlockProject 3D
+// Copyright (c) 2026, BlockProject 3D
 //
 // All rights reserved.
 //
@@ -30,7 +30,7 @@ use std::io::{Read, Seek, SeekFrom, Write};
 use bpx::core::{Handle, SectionData};
 use bpx::core::header::{FLAG_CHECK_CRC32, FLAG_CHECK_WEAK, FLAG_COMPRESS_XZ, FLAG_COMPRESS_ZLIB};
 use bpx::core::options::{Checksum, CompressionMethod};
-use bpx::util::traits::{Shift, ShiftTo};
+use bpx::util::traits::{ReadFill, Shift, ShiftTo};
 use safer_ffi::prelude::*;
 use crate::common::{Container, CSeekFrom, SectionInfo, with_section, try_with_section};
 
@@ -109,9 +109,16 @@ pub fn bpx_section_seek(container: &Container, handle: u32, from: CSeekFrom, pos
 
 #[ffi_export]
 pub fn bpx_section_read(container: &Container, handle: u32, buffer: c_slice::Mut<'_, u8>) -> isize {
-    try_with_section(container, handle, |v| v.read(buffer.as_slice()))
+    try_with_section(container, handle, |v| v.read_fill(buffer.as_slice()))
         .map(|v| v as _)
         .unwrap_or(-1)
+}
+
+#[ffi_export]
+pub fn bpx_section_read_exact(container: &Container, handle: u32, buffer: c_slice::Mut<'_, u8>) -> bool {
+    try_with_section(container, handle, |v| v.read_exact(buffer.as_slice()))
+        .map(|_| true)
+        .unwrap_or(false)
 }
 
 #[ffi_export]
@@ -119,6 +126,13 @@ pub fn bpx_section_write(container: &Container, handle: u32, buffer: c_slice::Re
     try_with_section(container, handle, |v| v.write(buffer.as_slice()))
         .map(|v| v as _)
         .unwrap_or(-1)
+}
+
+#[ffi_export]
+pub fn bpx_section_write_all(container: &Container, handle: u32, buffer: c_slice::Ref<'_, u8>) -> bool {
+    try_with_section(container, handle, |v| v.write_all(buffer.as_slice()))
+        .map(|_| true)
+        .unwrap_or(false)
 }
 
 #[ffi_export]

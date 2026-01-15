@@ -57,7 +57,11 @@ BPX_API ssize_t bpx_section_seek(BPX_NONNULL const bpx_container_t* container, b
 
 BPX_API ssize_t bpx_section_read(BPX_NONNULL const bpx_container_t* container, bpx_section_handle_t section, bpx_bytes_t buffer);
 
+BPX_API bool bpx_section_read_exact(BPX_NONNULL const bpx_container_t* container, bpx_section_handle_t section, bpx_bytes_t buffer);
+
 BPX_API ssize_t bpx_section_write(BPX_NONNULL const bpx_container_t* container, bpx_section_handle_t section, bpx_bytes_const_t buffer);
+
+BPX_API bool bpx_section_write_all(BPX_NONNULL const bpx_container_t* container, bpx_section_handle_t section, bpx_bytes_const_t buffer);
 
 BPX_API bool bpx_section_shift_left(BPX_NONNULL const bpx_container_t* container, bpx_section_handle_t section, size_t length);
 
