@@ -141,7 +141,7 @@
     return YES;
 }
 
--(BOOL)seek:(BPXSeekFrom)from pos:(NSInteger)pos error:(NSError**)error {
+-(BOOL)seekFrom:(BPXSeekFrom)from pos:(NSInteger)pos error:(NSError**)error {
     NSInteger res = bpx_section_seek(_parent.rawHandle, _handle, (bpx_seek_from_t)from, pos);
     if (res < 0) {
         *error = BPXEditGetLastError();

@@ -65,7 +65,7 @@ typedef bpx_section_header_t BPXSectionHeader;
 
 -(BOOL)write:(NSData*)data error:(NSError**)error;
 
--(BOOL)seek:(BPXSeekFrom)from pos:(NSInteger)pos error:(NSError**)error;
+-(BOOL)seekFrom:(BPXSeekFrom)from pos:(NSInteger)pos error:(NSError**)error;
 
 @end
 
