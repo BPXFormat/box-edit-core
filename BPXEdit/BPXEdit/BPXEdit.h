@@ -30,6 +30,7 @@
 #import <BPXEdit/BPXSection.h>
 #import <BPXEdit/BPXStream.h>
 #import <BPXEdit/BPXTable.h>
+#import <BPXEdit/BPXStrings.h>
 #import <BPXEdit/BPXValue.h>
 #import <BPXEdit/DataStream.h>
 #import <BPXEdit/NSDataStream.h>
