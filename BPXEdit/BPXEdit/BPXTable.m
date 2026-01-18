@@ -181,6 +181,14 @@
     return [[BPXColumn alloc] __initFromIndex:col name:name row:_row];
 }
 
+-(BOOL)save:(NSError**)error {
+    if (!bpx_table_save(_table)) {
+        *error = BPXEditGetLastError();
+        return NO;
+    }
+    return YES;
+}
+
 -(BPXRow*)newRow {
     return [[BPXRow alloc] initFromRawHandle:_table];
 }

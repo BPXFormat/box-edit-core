@@ -75,6 +75,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 -(nullable BPXColumn*)columnForName:(NSString*)name error:(NSError**)error;
 
+-(BOOL)save:(NSError**)error;
+
 -(BPXRow*)newRow;
 
 -(nullable BPXRow*)read:(NSInteger)index error:(NSError**)error;
