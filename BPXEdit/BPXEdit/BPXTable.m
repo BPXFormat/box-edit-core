@@ -116,10 +116,12 @@
     _strings = strings;
     _rowCount = 0;
     _row = nil;
-    [self resetRow];
-    _rowCount = bpx_table_get_row_count(_table, _row.rawHandle);
-    if (![self updateRowCount:error])
-        return nil;
+    if ([self rowSize] > 0) {
+        [self resetRow];
+        if (![self updateRowCount:error])
+            return nil;
+    } else
+        _rowCount = 0;
     return self;
 }
 

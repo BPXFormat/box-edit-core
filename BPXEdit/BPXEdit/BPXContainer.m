@@ -136,8 +136,10 @@
         return nil;
     }
     BPXSection* section = [[BPXSection alloc] initFromContainer:self handle:bpx_table_handle(table) error:error];
-    if (section == nil)
+    if (section == nil) {
+        *error = BPXEditGetLastError();
         return nil;
+    }
     return [[BPXTable alloc] initFromSection:section strings:strings handle:table error:error];
 }
 
