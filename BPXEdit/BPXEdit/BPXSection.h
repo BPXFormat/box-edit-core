@@ -60,6 +60,7 @@ typedef bpx_section_header_t BPXSectionHeader;
 -(void)remove;
 
 -(nullable BPXTable*)openTable:(BPXSection*)strings error:(NSError**)error;
+-(nullable BPXStrings*)openStringsWithError:(NSError**)error;
 
 -(nullable NSData*)read:(NSInteger)size error:(NSError**)error;
 

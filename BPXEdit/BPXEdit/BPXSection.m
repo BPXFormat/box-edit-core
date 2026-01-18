@@ -30,6 +30,7 @@
 #import "BPXEdit/Util.h"
 #include <BPXEditCore/strings.h>
 #import "BPXEdit/BPXTable.h"
+#import "BPXEdit/BPXStrings.h"
 
 @implementation BPXSection {
     bpx_section_handle_t _handle;
@@ -106,6 +107,14 @@
         return nil;
     }
     return [[BPXTable alloc] initFromSection:self strings:strings handle:table error:error];
+}
+
+-(nullable BPXStrings*)openStringsWithError:(NSError**)error {
+    if (!bpx_strings_load(_parent.rawHandle, _handle)) {
+        *error = BPXEditGetLastError();
+        return nil;
+    }
+    return [[BPXStrings alloc] initFromSection:self];
 }
 
 -(nullable NSData*)read:(NSInteger)size error:(NSError**)error {

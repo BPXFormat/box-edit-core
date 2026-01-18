@@ -31,6 +31,7 @@
 #import "BPXEdit/BPXStream.h"
 #import "BPXEdit/BPXSection.h"
 #import "BPXEdit/BPXTable.h"
+#import "BPXEdit/BPXStrings.h"
 #include <BPXEditCore/strings.h>
 
 @implementation BPXContainer {
@@ -122,9 +123,10 @@
     return [[BPXSection alloc] initFromContainer:self handle:handle error:nil];
 }
 
--(BPXSection*)createStrings {
+-(BPXStrings*)createStrings {
     bpx_section_handle_t handle = bpx_strings_create(_handle);
-    return [[BPXSection alloc] initFromContainer:self handle:handle error:nil];
+    BPXSection* section = [[BPXSection alloc] initFromContainer:self handle:handle error:nil];
+    return [[BPXStrings alloc] initFromSection:section];
 }
 
 -(nullable BPXTable*)createTable:(BPXSection*)strings name:(const NSString*)name error:(NSError**)error {

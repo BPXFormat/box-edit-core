@@ -49,6 +49,7 @@ typedef bpx_main_header_t BPXMainHeader;
 @class BPXStream;
 @class BPXSection;
 @class BPXTable;
+@class BPXStrings;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -72,7 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 -(BPXSection*)createSectionWithType:(uint8_t)ty;
 
--(BPXSection*)createStrings;
+-(BPXStrings*)createStrings;
 
 -(nullable BPXTable*)createTable:(BPXSection*)strings name:(const NSString*)name error:(NSError**)error;
 
