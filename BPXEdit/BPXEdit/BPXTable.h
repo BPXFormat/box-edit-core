@@ -52,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 -(bool)isFree;
 
--(BPXValue*)objectAtIndexedSubscript:(BPXColumn*)column;
+-(BPXMutableValue*)objectAtIndexedSubscript:(BPXColumn*)column;
 
 @end
 

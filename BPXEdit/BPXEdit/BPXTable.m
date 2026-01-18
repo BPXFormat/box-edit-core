@@ -43,7 +43,7 @@
 
 @implementation BPXRow {
     bpx_table_row_t* _row;
-    NSMutableArray<BPXValue*>* _values;
+    NSMutableArray<BPXMutableValue*>* _values;
 }
 
 -(void)__setIndex:(NSInteger)index {
@@ -62,11 +62,11 @@
     _row = bpx_table_row_create(table);
     size_t columns = bpx_table_get_columns(table);
     for (size_t i = 0; i != columns; ++i) {
-        BPXValue* value;
+        BPXMutableValue* value;
         if (i < _values.count)
             value = _values[i];
         else {
-            value = [BPXValue alloc];
+            value = [BPXMutableValue alloc];
             [_values addObject:value];
         }
         (void)[value initFromRawHandle:bpx_table_row_get_value(_row, i)];
@@ -86,7 +86,7 @@
     return bpx_table_row_is_free(_row);
 }
 
--(BPXValue*)objectAtIndexedSubscript:(BPXColumn*)column {
+-(BPXMutableValue*)objectAtIndexedSubscript:(BPXColumn*)column {
     return _values[column.index];
 }
 
