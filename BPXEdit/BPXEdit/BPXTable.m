@@ -163,13 +163,13 @@
     [self resetRow];
 }
 
--(bool)updateRowCount:(NSError**)error {
+-(BOOL)updateRowCount:(NSError**)error {
     _rowCount = bpx_table_get_row_count(_table, _row.rawHandle);
     if (_rowCount == -1) {
         *error = BPXEditGetLastError();
-        return false;
+        return NO;
     }
-    return true;
+    return YES;
 }
 
 -(nullable BPXColumn*)columnForName:(NSString*)name error:(NSError**)error {
@@ -202,11 +202,11 @@
     return _row;
 }
 
--(bool)write:(BPXRow*)row index:(NSInteger)index error:(NSError**)error {
+-(BOOL)write:(BPXRow*)row index:(NSInteger)index error:(NSError**)error {
     [row __setIndex:index];
     if (!bpx_table_write(_table, row.rawHandle, index)) {
         *error = BPXEditGetLastError();
-        return false;
+        return NO;
     }
     return [self updateRowCount:error];
 }

@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 -(nullable BPXRow*)read:(NSInteger)index error:(NSError**)error;
 
--(bool)write:(BPXRow*)row index:(NSInteger)index error:(NSError**)error;
+-(BOOL)write:(BPXRow*)row index:(NSInteger)index error:(NSError**)error;
 
 -(nullable BPXRow*)append:(BPXRow*)row error:(NSError**)error;
 
