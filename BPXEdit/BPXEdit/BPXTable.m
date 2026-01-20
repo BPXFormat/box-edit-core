@@ -192,7 +192,7 @@
 }
 
 -(BPXRow*)newRow {
-    return [[BPXRow alloc] initFromRawHandle:_table];
+    return [[[BPXRow alloc] init] initFromRawHandle:_table];
 }
 
 -(nullable BPXRow*)read:(NSInteger)index error:(NSError**)error {
