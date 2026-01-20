@@ -50,6 +50,7 @@
 				BPXEdit.h,
 				BPXSection.h,
 				BPXStream.h,
+				BPXStrings.h,
 				BPXTable.h,
 				BPXValue.h,
 				DataStream.h,
