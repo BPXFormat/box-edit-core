@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		DAA4F4EF2F0C6EC900C26F03 /* BPXEdit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAA4F4E32F0C6EC900C26F03 /* BPXEdit.framework */; };
 		DAA4F5222F0C6F7C00C26F03 /* BPXEditCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAA4F5212F0C6F7C00C26F03 /* BPXEditCore.xcframework */; };
-		DAA4F5232F0C6F7C00C26F03 /* BPXEditCore.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DAA4F5212F0C6F7C00C26F03 /* BPXEditCore.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		DAA4F5232F0C6F7C00C26F03 /* BPXEditCore.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DAA4F5212F0C6F7C00C26F03 /* BPXEditCore.xcframework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
