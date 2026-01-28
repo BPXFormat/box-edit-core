@@ -23,8 +23,7 @@ struct BPXEditTests {
     @Test func testTable() async throws {
         let data = NSDataStream(Data())
         let container = BPXStream(from: data).create();
-        let strings = container.createStrings();
-        let table = try container.createTable(strings.section, name: "Test");
+        let table = try container.createTable("Test");
         let a = try table.addColumn("A", type: .uint8, len: 1);
         let b = try table.addColumn("B", type: .float, len: 1);
         let c = try table.addColumn("C", type: .string, len: 8);
@@ -42,8 +41,7 @@ struct BPXEditTests {
 
         let data1 = NSDataStream(data.data())
         let container1 = try BPXStream(from: data1).open();
-        let strings1 = container1.sections.first(where: { $0.header.type == 0xFF });
-        let table1 = try container1.sections.first(where: { $0.header.type == 0xFD })!.openTable(strings1!);
+        let table1 = try container1.sections.first(where: { $0.header.type == 0xFD })!.openTable();
         let a1 = try table1.column(forName: "A");
         let b1 = try table1.column(forName: "B");
         let c1 = try table1.column(forName: "C");

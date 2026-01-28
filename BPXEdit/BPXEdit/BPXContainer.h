@@ -75,7 +75,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 -(BPXStrings*)createStrings;
 
--(nullable BPXTable*)createTable:(BPXSection*)strings name:(const NSString*)name error:(NSError**)error;
+-(nullable BPXTable*)createTable:(const NSString*)name strings:(BPXSection*)strings error:(NSError**)error;
+
+-(nullable BPXTable*)createTable:(const NSString*)name error:(NSError**)error;
 
 @end
 

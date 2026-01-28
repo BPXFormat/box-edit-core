@@ -53,3 +53,11 @@ NSError* BPXEditUTF8Error(void) {
     };
     return [NSError errorWithDomain:@"BPXEdit" code:128 userInfo:dict];
 }
+
+NSError* BPXEditSectionNotFoundError(void) {
+    NSDictionary<NSErrorUserInfoKey, id> *dict = @{
+        NSLocalizedDescriptionKey: @"section not found",
+        NSDebugDescriptionErrorKey: @"section not found"
+    };
+    return [NSError errorWithDomain:@"BPXEdit" code:128 userInfo:dict];
+}

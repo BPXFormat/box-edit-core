@@ -129,7 +129,17 @@
     return [[BPXStrings alloc] initFromSection:section];
 }
 
--(nullable BPXTable*)createTable:(BPXSection*)strings name:(const NSString*)name error:(NSError**)error {
+-(nullable BPXTable*)createTable:(const NSString*)name error:(NSError**)error {
+    for (BPXSection* sec in _sections) {
+        if (sec.header.type == SECTION_TYPE_STRING) {
+            return [self createTable:name strings:sec error:error];
+        }
+    }
+    BPXSection* sec = [self createStrings].section;
+    return [self createTable:name strings:sec error:error];
+}
+
+-(nullable BPXTable*)createTable:(const NSString*)name strings:(BPXSection*)strings error:(NSError**)error {
     bpx_table_t* table = bpx_table_create(_handle, strings.rawHandle, name.UTF8String);
     if (table == NULL) {
         *error = BPXEditGetLastError();

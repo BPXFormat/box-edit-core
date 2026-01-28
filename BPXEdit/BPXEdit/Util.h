@@ -31,3 +31,5 @@
 NSError* BPXEditGetLastError(void);
 
 NSError* BPXEditUTF8Error(void);
+
+NSError* BPXEditSectionNotFoundError(void);

@@ -100,13 +100,23 @@
     [_parent removeSection:self];
 }
 
--(nullable BPXTable*)openTable:(BPXSection*)strings error:(NSError**)error {
+-(nullable BPXTable*)openTableWithStrings:(BPXSection*)strings error:(NSError**)error {
     bpx_table_t* table = bpx_table_open(_parent.rawHandle, _handle, strings.rawHandle);
     if (table == NULL) {
         *error = BPXEditGetLastError();
         return nil;
     }
     return [[BPXTable alloc] initFromSection:self strings:strings handle:table error:error];
+}
+
+-(nullable BPXTable*)openTableWithError:(NSError**)error {
+    for (BPXSection* sec in _parent.sections) {
+        if (sec.header.type == SECTION_TYPE_STRING) {
+            return [self openTableWithStrings:sec error:error];
+        }
+    }
+    *error = BPXEditSectionNotFoundError();
+    return nil;
 }
 
 -(nullable BPXStrings*)openStringsWithError:(NSError**)error {
