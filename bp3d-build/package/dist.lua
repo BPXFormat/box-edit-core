@@ -26,7 +26,7 @@ function Dist:package()
     local coreFramework = self.context.path:join("core/target/BPXEditCore.xcframework")
     if bp3d.files.exists(coreFramework) then
         print("Copying BPXEditCore.xcframework...")
-        build.run("cp", { "-r", coreFramework, distFolder:join("BPXEditCore.xcframework") })
+        build.run("cp", { "-R", coreFramework, distFolder:join("BPXEditCore.xcframework") })
     end
 
     -- Generate the BPXEdit XC framework if needed
