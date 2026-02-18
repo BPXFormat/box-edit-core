@@ -72,7 +72,7 @@
     _handle = infos->handle;
     _index = infos->index;
     _header = infos->header;
-    _data = nil;
+    _data = [[NSMutableData alloc] init];
     _pos = 0;
     _bytesWritten = 0;
     _size = 0;
